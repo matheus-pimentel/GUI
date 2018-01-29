@@ -30,7 +30,6 @@ public:
     void init_quad();
     void set_params(int select, double value);
     void set_run(bool a);
-    void print_matrix(matrixds matrix);
     ~quad();
 
 protected:

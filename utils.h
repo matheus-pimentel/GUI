@@ -26,6 +26,7 @@ struct params{
     double I[3][3];
 };
 
+void print_matrix(matrixds matrix);
 matrixds rotation_matrix(double roll, double pitch, double yaw);
 matrixds tranformation_matrix(double roll, double pitch, double yaw);
 matrixds inv_transformation_matrix(double roll, double pitch, double yaw);

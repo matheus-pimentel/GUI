@@ -1,7 +1,20 @@
 #include "utils.h"
 #include "math.h"
+#include "iostream"
 
 using namespace std;
+
+void print_matrix(matrixds matrix)
+{
+    int i = 0, j = 0;
+    for(i = 0; i < matrix.l; i++){
+        for(j = 0; j < matrix.c; j++){
+            cout << matrix.matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
+}
 
 matrixds rotation_matrix(double roll, double pitch, double yaw)
 {
