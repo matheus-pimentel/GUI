@@ -4,11 +4,15 @@
 #include <utility>
 #include <vector>
 
-struct point{
-    double x;
-    double y;
-    double z;
+typedef std::vector<std::vector<double>> matrixd;
+
+struct matrixds
+{
+    matrixd matrix;
+    int l;
+    int c;
 };
+
 struct params{
     double mass;
     double l;
@@ -22,11 +26,11 @@ struct params{
     double I[3][3];
 };
 
-typedef std::vector<double> vectord;
-typedef std::vector<std::vector<double> > matrixd;
-
-point set_points(double vector1, double vector2, double vector3);
-vectord nothing(vectord);
-matrixd nothingm(matrixd);
+matrixds rotation_matrix(double roll, double pitch, double yaw);
+matrixds tranformation_matrix(double roll, double pitch, double yaw);
+matrixds inv_transformation_matrix(double roll, double pitch, double yaw);
+matrixds sum_matrix(matrixds a, matrixds b);
+matrixds transposed_matrix(matrixds a);
+matrixds product_matrix(matrixds a, matrixds b);
 
 #endif // UTILS_H

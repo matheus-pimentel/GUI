@@ -14,27 +14,24 @@ quad::quad()
 void quad::run()
 {
     while(is_running){
-        matrixd matriz;
-        matriz = matrixd(2, vector<double>(2, 0.0));
-        matriz = {{1,2},{3,4}};
-        matrixd outra = {{1,2},{3,4},{5,6}};
-        outra = matrixd(2, vector<double>(2, 0.0));
-        outra = nothingm(matriz);
-        cout << outra[0][0] << " " << outra[0][1]<< endl << outra[1][0] << " " << outra[1][1]<< endl << endl;;
-
+        matrixds a,b;
+        a.matrix = {{1,2,3},{4,5,6}};a.l = 2;a.c = 3;
+        b.matrix = {{1,2},{3,4},{5,6}};b.l = 3;b.c = 2;
+        print_matrix(inv_transformation_matrix(0,0,0));
         Sleep(1000);
     }
 }
 
 void quad::init_quad()
 {
-    position = set_points(0,0,0);
-    orientation = set_points(0,0,0);
-    linear_vel = set_points(0,0,0);
-    linear_acc = set_points(0,0,0);
-    angular_vel = set_points(0,0,0);
-    angular_vel_quad = set_points(0,0,0);
-    angular_acc = set_points(0,0,0);
+    position.matrix = matrixd(1, vector<double>(3, 0.0)); position.l = 1; position.c = 3;
+    orientation.matrix = matrixd(1, vector<double>(3, 0.0)); orientation.l = 1; orientation.c = 3;
+    linear_vel.matrix = matrixd(1, vector<double>(3, 0.0)); linear_vel.l = 1; linear_vel.c = 3;
+    linear_acc.matrix = matrixd(1, vector<double>(3, 0.0)); linear_acc.l = 1; linear_acc.c = 3;
+    angular_vel.matrix = matrixd(1, vector<double>(3, 0.0)); angular_vel.l = 1; angular_vel.c = 3;
+    angular_vel_quad.matrix = matrixd(1, vector<double>(3, 0.0)); angular_vel_quad.l = 1; angular_vel_quad.c = 3;
+    angular_acc.matrix = matrixd(1, vector<double>(3, 0.0)); angular_acc.l = 1; angular_acc.c = 3;
+    motor.matrix = matrixd(1, vector<double>(4, 0.0)); motor.l = 1; motor.c = 4;
     set_params(1,0.468);
     set_params(2,0.225);
     set_params(3,1.14*pow(10,-7));
@@ -43,33 +40,7 @@ void quad::init_quad()
     set_params(6,0.004856);
     set_params(7,0.008801);
     set_params(8,9.81);
-    set_params(9,0.02);
-}
-
-void quad::rotation_matrix(double roll, double pitch, double yaw)
-{
-    rotation_matrix_calc[0][0] = cos(yaw)*cos(pitch) - sin(roll)*sin(yaw)*sin(pitch);
-    rotation_matrix_calc[0][1] = -cos(roll)*sin(yaw);
-    rotation_matrix_calc[0][2] = cos(yaw)*sin(pitch) + cos(pitch)*sin(roll)*sin(yaw);
-    rotation_matrix_calc[1][0] = cos(pitch)*sin(yaw) + cos(yaw)*sin(roll)*sin(pitch);
-    rotation_matrix_calc[1][1] = cos(roll)*cos(yaw);
-    rotation_matrix_calc[1][2] = sin(yaw)*sin(pitch) - cos(pitch)*sin(roll)*cos(yaw);
-    rotation_matrix_calc[2][0] = -cos(roll)*sin(pitch);
-    rotation_matrix_calc[2][1] = sin(roll);
-    rotation_matrix_calc[2][2] = cos(roll)*cos(pitch);
-}
-
-void quad::tranformation_matrix(double roll, double pitch, double yaw)
-{
-    transformation_matrix_calc[0][0] = cos(pitch);
-    transformation_matrix_calc[0][1] = 0;
-    transformation_matrix_calc[0][2] = -cos(roll)*sin(pitch);
-    transformation_matrix_calc[1][0] = 0;
-    transformation_matrix_calc[1][1] = 1;
-    transformation_matrix_calc[1][2] = sin(roll);
-    transformation_matrix_calc[2][0] = sin(pitch);
-    transformation_matrix_calc[2][1] = 0;
-    transformation_matrix_calc[2][2] = cos(roll)*cos(pitch);
+    set_params(9,0.01);
 }
 
 void quad::set_params(int select, double value)
@@ -110,6 +81,18 @@ void quad::set_params(int select, double value)
 void quad::set_run(bool a)
 {
     is_running = a;
+}
+
+void quad::print_matrix(matrixds matrix)
+{
+    int i = 0, j = 0;
+    for(i = 0; i < matrix.l; i++){
+        for(j = 0; j < matrix.c; j++){
+            cout << matrix.matrix[i][j] << " ";
+        }
+        cout << endl;
+    }
+    cout << endl;
 }
 
 quad::~quad()
