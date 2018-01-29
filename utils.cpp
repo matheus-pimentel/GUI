@@ -103,3 +103,18 @@ matrixds product_matrix(matrixds a, matrixds b)
     product.c = b.c;
     return product;
 }
+
+matrixds multiple_matrix(double a, matrixds b)
+{
+    int i = 0, j = 0;
+    matrixds multiple;
+    multiple.matrix = matrixd(b.l,vector<double>(b.c,0.0));
+    multiple.l = b.l;
+    multiple.c = b.c;
+    for(i = 0; i < b.l; i++){
+        for(j = 0; j < b.c; j++){
+            multiple.matrix[i][j] = a*b.matrix[i][j];
+        }
+    }
+    return multiple;
+}

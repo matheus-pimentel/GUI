@@ -19,6 +19,7 @@ public:
 private slots:
     void on_start_quad_clicked();
     void on_change_params_clicked();
+    void on_add_waypoints_clicked();
 
 private:
     quad quadrotor;

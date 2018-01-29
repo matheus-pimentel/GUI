@@ -2,6 +2,7 @@
 #include "ui_mainwindow.h"
 #include "iostream"
 #include "quad.h"
+#include "utils.h"
 
 using namespace std;
 
@@ -10,7 +11,7 @@ mainwindow::mainwindow(QWidget *parent) :
     ui(new Ui::mainwindow)
 {
     ui->setupUi(this);
-
+    setWindowTitle("GUI");
     ui->params_options->addItem("Mass");
     ui->params_options->addItem("L");
     ui->params_options->addItem("B");
@@ -37,7 +38,6 @@ void mainwindow::on_start_quad_clicked()
         ui->start_quad->setText("Play");
         quad_isrunning = false;
         quadrotor.set_run(0);
-        cout << 0 << endl;
     }
 }
 void mainwindow::on_change_params_clicked()
@@ -74,4 +74,29 @@ void mainwindow::on_change_params_clicked()
     }
 
     quadrotor.set_params(num_params,value);
+}
+void mainwindow::on_add_waypoints_clicked()
+{
+    string w_x = ui->x->text().toUtf8().constData();
+    string w_y = ui->y->text().toUtf8().constData();
+    string w_z = ui->z->text().toUtf8().constData();
+    string w_yaw = ui->yaw->text().toUtf8().constData();
+    string w_time = ui->time->text().toUtf8().constData();
+    double waypoint_x = atof(w_x.c_str());
+    double waypoint_y = atof(w_y.c_str());
+    double waypoint_z = atof(w_z.c_str());
+    double waypoint_yaw = atof(w_yaw.c_str());
+    double waypoint_time = atof(w_time.c_str());
+    matrixds waypoint;
+    waypoint.matrix = matrixd(1,vector<double>(5,0.0));
+    waypoint.matrix = {{waypoint_x, waypoint_y, waypoint_z, waypoint_yaw, waypoint_time}};
+    waypoint.l = 1;
+    waypoint.c = 5;
+
+    matrixds quad_waypoint = quadrotor.get_waypoints();
+    if(waypoint_time > quad_waypoint.matrix[quad_waypoint.l-1][4]){
+        quadrotor.set_waypoints(waypoint);
+    }else{
+        cout << "Invalid waypoint" << endl << endl;
+    }
 }
