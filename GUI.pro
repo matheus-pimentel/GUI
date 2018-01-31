@@ -27,12 +27,14 @@ SOURCES += \
         main.cpp \
         mainwindow.cpp \
     utils.cpp \
-    quad.cpp
+    quad.cpp \
+    controller.cpp
 
 HEADERS += \
         mainwindow.h \
     utils.h \
-    quad.h
+    quad.h \
+    controller.h
 
 FORMS += \
         mainwindow.ui

@@ -15,6 +15,7 @@ void quad::run()
 {
     while(is_running){
         model();
+        print_matrix(controlhandle.trajhandle(t));
         Sleep(1000);
     }
 }
@@ -143,6 +144,7 @@ void quad::set_waypoints(matrixds matrix)
 {
     waypoints.matrix[waypoints.l] = {{matrix.matrix[0][0], matrix.matrix[0][1], matrix.matrix[0][2], matrix.matrix[0][3], matrix.matrix[0][4]}};
     waypoints.l++;
+    controlhandle.set_waypoints(waypoints);
 }
 
 matrixds quad::get_waypoints()

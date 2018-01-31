@@ -1,9 +1,11 @@
 #ifndef QUAD_H
 #define QUAD_H
 
-#include"utils.h"
+#include "utils.h"
+#include "controller.h"
 #include<QThread>
 
+using namespace Eigen;
 using namespace std;
 
 struct params{
@@ -38,6 +40,7 @@ private:
     matrixds des_state;
     matrixds old_des_state;
     matrixds waypoints;
+    controller controlhandle;
     double t = 0;
     double iteration = 0;
     bool is_running = false;

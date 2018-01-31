@@ -118,3 +118,57 @@ matrixds multiple_matrix(double a, matrixds b)
     }
     return multiple;
 }
+
+matrixds inverse_matrix(matrixds matrix)
+{
+    int i = 0, j = 0;
+    matrixds inv;
+    MatrixXd matrix2(matrix.l,matrix.c);
+
+    inv.matrix= matrixd(matrix.l, vector<double>(matrix.c, 0.0));
+    inv.l = matrix.l;
+    inv.c = matrix.c;
+
+    if(matrix.l == matrix.c){
+        for(i = 0; i < matrix.l; i++){
+            for(j = 0; j < matrix.c; j++){
+                matrix2(i,j) = matrix.matrix[i][j];
+            }
+        }
+        FullPivLU<MatrixXd> lu(matrix2);
+        MatrixXd lu2 = lu.inverse();
+
+        for(i = 0; i < matrix.l; i++){
+            for(j = 0; j < matrix.c; j++){
+                inv.matrix[i][j] = lu2(i,j);
+            }
+        }
+    }
+    return inv;
+}
+
+matrixds line_matrix(matrixds matrix, int a)
+{
+    matrixds line;
+    int i = 0;
+    line.matrix = matrixd(1, vector<double>(matrix.c,0.0));
+    line.l = 1;
+    line.c = matrix.c;
+    for(i = 0; i < matrix.c; i++){
+        line.matrix[0][i] = matrix.matrix[a][i];
+    }
+    return line;
+}
+
+matrixds column_matrix(matrixds matrix, int a)
+{
+    matrixds column;
+    int i = 0;
+    column.matrix = matrixd(matrix.l, vector<double>(1,0.0));
+    column.l = matrix.l;
+    column.c = 1;
+    for(i = 0; i < matrix.l; i++){
+        column.matrix[i][0] = matrix.matrix[i][a];
+    }
+    return column;
+}
