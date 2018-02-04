@@ -1,14 +1,23 @@
 #include "controller.h"
 #include "utils.h"
+#include "math.h"
 #include "iostream"
 
 using namespace std;
 
 controller::controller()
 {
-    waypoints.matrix = matrixd(100, vector<double>(5,0.0));
+    waypoints = resize_matrix(100,5);
     waypoints.l = 1;
-    waypoints.c = 5;
+    b3 = resize_matrix(1,3);
+    b3.matrix = {{0, 0, 1}};
+    motor = resize_matrix(1,4);
+    I = resize_matrix(3,3);
+
+    kp_thrust = 20;
+    kd_thrust = 0.1;
+    kp_moment = 3.5;
+    kd_moment = 0.001;
 }
 
 matrixds controller::trajhandle(double t)
@@ -17,16 +26,17 @@ matrixds controller::trajhandle(double t)
     double t_init, t_final;
 
     matrixds des_state;
-    des_state.matrix = matrixd(5, vector<double>(3, 0.0));
-    des_state.l = 5; des_state.c = 3;
+    des_state = resize_matrix(5,3);
 
-    matrixds a, b;
-    a.matrix = matrixd(8, vector<double>(8, 0.0)); a.l = 8; a.c = 8;
-    b.matrix = matrixd(8, vector<double>(3, 0.0)); b.l = 8; b.c = 3;
+    matrixds a, b, a_phi, b_phi;
+    a = resize_matrix(8,8);
+    b = resize_matrix(8,3);
+    a_phi = resize_matrix(4,4);
+    b_phi = resize_matrix(4,1);
 
-    matrixds aux;
-    aux.matrix = matrixd(3,vector<double>(8, 0.0));
-    aux.l = 3; aux.c = 8;
+    matrixds aux, aux_phi;
+    aux = resize_matrix(3,8);
+    aux_phi = resize_matrix(2,4);
 
     for(i = 0; i < waypoints.l; i++){
         if( t < waypoints.matrix[i][4]){
@@ -40,6 +50,10 @@ matrixds controller::trajhandle(double t)
                         {0,0,0},
                         {0,0,0},
                         {0,0,0}};
+            b_phi.matrix = {{waypoints.matrix[i-1][3]},
+                            {waypoints.matrix[i][3]},
+                            {0},
+                            {0}};
             break;
         }
         if( t >= waypoints.matrix[waypoints.l-1][4]){
@@ -53,6 +67,10 @@ matrixds controller::trajhandle(double t)
                         {0,0,0},
                         {0,0,0},
                         {0,0,0}};
+            b_phi.matrix = {{waypoints.matrix[waypoints.l-1][3]},
+                            {waypoints.matrix[waypoints.l-1][3]},
+                            {0},
+                            {0}};
         }
     }
     a.matrix = {{pow(t_init,7), pow(t_init,6), pow(t_init,5), pow(t_init,4), pow(t_init,3), pow(t_init,2), pow(t_init,1), pow(t_init,0)},
@@ -64,22 +82,140 @@ matrixds controller::trajhandle(double t)
                 {210*pow(t_init,4), 120*pow(t_init,3), 60*pow(t_init,2), 24*pow(t_init,1), 6*pow(t_init,0), 0, 0, 0},
                 {210*pow(t_final,4), 120*pow(t_final,3), 60*pow(t_final,2), 24*pow(t_final,1), 6*pow(t_final,0), 0, 0, 0}};
 
+    a_phi.matrix = {{pow(t_init,3), pow(t_init,2), pow(t_init,1), pow(t_init,0)},
+                    {pow(t_final,3), pow(t_final,2), pow(t_final,1), pow(t_final,0)},
+                    {3*pow(t_init,2), 2*pow(t_init,1), pow(t_init,0), 0},
+                    {3*pow(t_final,2), 2*pow(t_final,1), pow(t_final,0), 0}};
+
     aux.matrix = {{pow(t,7), pow(t,6), pow(t,5), pow(t,4), pow(t,3), pow(t,2), pow(t,1), pow(t,0)},
                   {7*pow(t,6), 6*pow(t,5), 5*pow(t,4), 4*pow(t,3), 3*pow(t,2), 2*pow(t,1), pow(t,0), 0},
                   {42*pow(t,5), 30*pow(t,4), 20*pow(t,3), 12*pow(t,2), 6*pow(t,1), 2*pow(t,0), 0, 0}};
+
+    aux_phi.matrix = {{pow(t,3), pow(t,2), pow(t,1), pow(t,0)},
+                      {3*pow(t,2), 2*pow(t,1), pow(t,0), 0}};
 
     for(i = 0; i < 3; i++){
         for(j = 0; j < 3; j++){
             des_state.matrix[i][j] = product_matrix(line_matrix(aux,i),product_matrix(inverse_matrix(a),column_matrix(b,j))).matrix[0][0];
         }
     }
+    des_state.matrix[3][0] = product_matrix(line_matrix(aux_phi,0),product_matrix(inverse_matrix(a_phi),b_phi)).matrix[0][0];
+    des_state.matrix[4][0] = product_matrix(line_matrix(aux_phi,1),product_matrix(inverse_matrix(a_phi),b_phi)).matrix[0][0];
 
     return des_state;
+}
+
+matrixds controller::update_motors(double t, matrixds state)
+{
+    geometric_tracking(t,state);
+    return motor;
+}
+
+void controller::geometric_tracking(double t, matrixds state)
+{
+    double roll = state.matrix[2][0];
+    double pitch = state.matrix[2][1];
+    double yaw = state.matrix[2][2];
+
+    MatrixXd des_state = mds2mxd(trajhandle(t));
+    MatrixXd des_state1 = mds2mxd(trajhandle(t+dt));
+    MatrixXd des_state2 = mds2mxd(trajhandle(t+2*dt));
+
+    MatrixXd state1 = mds2mxd(next_state(dt,state));
+    MatrixXd state2 = mds2mxd(next_state(2*dt,state));
+
+    MatrixXd t_vector(1,3), t_vector1(1,3), t_vector2(1,3);
+    t_vector = mass*(des_state.row(2) + gravity*mds2mxd(b3) + kp_thrust*(des_state.row(0) - mds2mxd(line_matrix(state,0))) + kd_thrust*(des_state.row(1) - mds2mxd(line_matrix(state,1))));
+    t_vector1 = mass*(des_state1.row(2) + gravity*mds2mxd(b3) + kp_thrust*(des_state1.row(0) - state1.row(0)) + kd_thrust*(des_state1.row(1) - state1.row(1)));
+    t_vector2 = mass*(des_state2.row(2) + gravity*mds2mxd(b3) + kp_thrust*(des_state2.row(0) - state2.row(0)) + kd_thrust*(des_state2.row(1) - state2.row(1)));
+
+    MatrixXd des_ang(3,1), des_ang1(3,1), des_ang2(3,1);
+
+    des_ang(0,0) = atan((t_vector(0,0)*sin(des_state(3,0)) - t_vector(0,1)*cos(des_state(3,0)))/(t_vector(0,2)));
+    des_ang(1,0) = atan2(t_vector(0,0)*cos(des_state(3,0)) + t_vector(0,1)*sin(des_state(3,0)),t_vector(0,2)/cos(des_ang(0,0)));
+    des_ang(2,0) = des_state(3,0);
+
+    des_ang1(0,0) = atan((t_vector1(0,0)*sin(des_state1(3,0)) - t_vector1(0,1)*cos(des_state1(3,0)))/(t_vector1(0,2)));
+    des_ang1(1,0) = atan2(t_vector1(0,0)*cos(des_state1(3,0)) + t_vector1(0,1)*sin(des_state1(3,0)),t_vector1(0,2)/cos(des_ang1(0,0)));
+    des_ang1(2,0) = des_state1(3,0);
+
+    des_ang2(0,0) = atan((t_vector2(0,0)*sin(des_state2(3,0)) - t_vector2(0,1)*cos(des_state2(3,0)))/(t_vector2(0,2)));
+    des_ang2(1,0) = atan2(t_vector2(0,0)*cos(des_state2(3,0)) + t_vector2(0,1)*sin(des_state2(3,0)),t_vector2(0,2)/cos(des_ang2(0,0)));
+    des_ang2(2,0) = des_state2(3,0);
+
+    MatrixXd R = mds2mxd(rotation_matrix(roll,pitch,yaw));
+    MatrixXd R1 = mds2mxd(rotation_matrix(state1(2,0),state1(2,1),state1(2,2)));
+    MatrixXd R_des = mds2mxd(rotation_matrix(des_ang(0,0),des_ang(1,0),des_ang(2,0)));
+    MatrixXd T = mds2mxd(transformation_matrix(roll,pitch,yaw));
+    MatrixXd T1 = mds2mxd(transformation_matrix(state1(2,0),state1(2,1),state1(2,2)));
+
+    MatrixXd omega = T*(des_ang1 - des_ang)/dt;
+    MatrixXd omega1 = T1*(des_ang2 - des_ang1)/dt;
+    MatrixXd omega_dot = (omega1 - omega)/dt;
+
+    MatrixXd matrix_err = (R_des.transpose()*R - R.transpose()*R_des)/2;
+    MatrixXd err (3,1);
+    err << matrix_err(2,1), matrix_err(0,2), matrix_err(1,0);
+
+    MatrixXd err_omega = mds2mxd(line_matrix(state,3)).transpose() - R.transpose()*R_des*omega;
+
+    MatrixXd F = t_vector*(R*mds2mxd(transposed_matrix(b3)));
+
+    MatrixXd omega_hat(3,3);
+    omega_hat << 0, -state.matrix[3][2], state.matrix[3][1],
+                state.matrix[3][2], 0, -state.matrix[3][0],
+                -state.matrix[3][1], state.matrix[3][0], 0;
+
+    MatrixXd M = -kp_moment*err - kd_moment*err_omega + omega_hat*mds2mxd(I)*mds2mxd(state).row(3).transpose() - mds2mxd(I)*(omega_hat*R.transpose()*R_des*omega - R.transpose()*R_des*omega_dot);
+
+    /*****************************************************************************************************
+    motor.matrix[0][0] = sqrt(F(0,0)/(4*k) - I.matrix[1][1]*M(1,0)/(2*k*l) + I.matrix[2][2]*M(2,0)/(4*b));
+    motor.matrix[0][1] = sqrt(F(0,0)/(4*k) + I.matrix[0][0]*M(0,0)/(2*k*l) - I.matrix[2][2]*M(2,0)/(4*b));
+    motor.matrix[0][2] = sqrt(F(0,0)/(4*k) + I.matrix[1][1]*M(1,0)/(2*k*l) + I.matrix[2][2]*M(2,0)/(4*b));
+    motor.matrix[0][3] = sqrt(F(0,0)/(4*k) - I.matrix[0][0]*M(0,0)/(2*k*l) - I.matrix[2][2]*M(2,0)/(4*b));
+    *****************************************************************************************************/
+
+    motor.matrix = {{F(0,0), M(0,0), M(1,0), M(2,0)}};
+    cout << err_omega << endl;
+
+}
+
+matrixds controller::next_state(double dt, matrixds state)
+{
+    matrixds next, angular_vel;
+    next = resize_matrix(state.l,state.c);
+
+    double roll = state.matrix[2][0];
+    double pitch= state.matrix[2][1];
+    double yaw = state.matrix[2][2];
+
+    angular_vel = transposed_matrix(product_matrix(inv_transformation_matrix(roll,pitch,yaw),transposed_matrix(line_matrix(state,3))));
+
+    next.matrix[0] = sum_matrix(line_matrix(state,0),multiple_matrix(dt,line_matrix(state,1))).matrix[0];
+    next.matrix[1] = line_matrix(state,1).matrix[0];
+    next.matrix[2] = sum_matrix(line_matrix(state,2),multiple_matrix(dt,angular_vel)).matrix[0];
+    next.matrix[3] = line_matrix(state,3).matrix[0];
+
+    return next;
 }
 
 void controller::set_waypoints(matrixds points)
 {
     waypoints = points;
     print_matrix(waypoints);
+}
+
+void controller::set_params(double mass1, double dt1, double gravity1, double Ixx, double Iyy, double Izz, double b1, double k1, double l1)
+{
+    mass = mass1;
+    dt = dt1;
+    gravity = gravity1;
+    I.matrix = {{Ixx, 0, 0},
+         {0, Iyy, 0},
+         {0, 0, Izz}};
+    b = b1;
+    k = k1;
+    l = l1;
+
 }
 

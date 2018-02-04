@@ -28,7 +28,7 @@ matrixds rotation_matrix(double roll, double pitch, double yaw)
     return R;
 }
 
-matrixds tranformation_matrix(double roll, double pitch, double yaw)
+matrixds transformation_matrix(double roll, double pitch, double yaw)
 {
     matrixds T;
     T.matrix = matrixd(3, vector<double>(3, 0.0));
@@ -71,7 +71,7 @@ matrixds transposed_matrix(matrixds a)
 {
     int i = 0, j = 0;
     matrixds transposed;
-    transposed.matrix= matrixd(a.c, vector<double>(a.l, 0.0));
+    transposed.matrix = matrixd(a.c, vector<double>(a.l, 0.0));
     for(i = 0; i < a.l; i++){
         for(j = 0; j < a.c; j++){
             transposed.matrix[j][i] = a.matrix[i][j];
@@ -171,4 +171,39 @@ matrixds column_matrix(matrixds matrix, int a)
         column.matrix[i][0] = matrix.matrix[i][a];
     }
     return column;
+}
+
+matrixds resize_matrix(int l, int c)
+{
+    matrixds matrix;
+    matrix.matrix = matrixd(l,vector<double>(c, 0.0));
+    matrix.l = l;
+    matrix.c = c;
+    return matrix;
+}
+
+matrixds mxd2mds(MatrixXd matrix)
+{
+    matrixds result = resize_matrix(matrix.rows(),matrix.cols());
+    int i = 0, j = 0;
+
+    for(i = 0; i < matrix.rows(); i++){
+        for(j = 0; j < matrix.cols(); j++){
+            result.matrix[i][j] = matrix(i,j);
+        }
+    }
+    return result;
+}
+
+MatrixXd mds2mxd(matrixds matrix)
+{
+    MatrixXd result(matrix.l,matrix.c);
+    int i = 0, j = 0;
+
+    for(i = 0; i < matrix.l; i++){
+        for(j = 0; j < matrix.c; j++){
+            result(i,j) = matrix.matrix[i][j];
+        }
+    }
+    return result;
 }

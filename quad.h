@@ -40,7 +40,7 @@ private:
     matrixds des_state;
     matrixds old_des_state;
     matrixds waypoints;
-    controller controlhandle;
+    controller *controlhandle;
     double t = 0;
     double iteration = 0;
     bool is_running = false;

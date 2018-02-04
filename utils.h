@@ -20,7 +20,7 @@ struct matrixds
 
 void print_matrix(matrixds matrix);
 matrixds rotation_matrix(double roll, double pitch, double yaw);
-matrixds tranformation_matrix(double roll, double pitch, double yaw);
+matrixds transformation_matrix(double roll, double pitch, double yaw);
 matrixds inv_transformation_matrix(double roll, double pitch, double yaw);
 matrixds sum_matrix(matrixds a, matrixds b);
 matrixds transposed_matrix(matrixds a);
@@ -29,5 +29,8 @@ matrixds multiple_matrix(double a, matrixds b);
 matrixds inverse_matrix(matrixds matrix);
 matrixds line_matrix(matrixds matrix, int a);
 matrixds column_matrix(matrixds matrix, int a);
+matrixds resize_matrix(int l, int c);
+matrixds mxd2mds(MatrixXd matrix);
+MatrixXd mds2mxd(matrixds matrix);
 
 #endif // UTILS_H
