@@ -3,7 +3,8 @@
 
 #include "utils.h"
 #include "controller.h"
-#include<QThread>
+#include <QThread>
+#include <QObject>
 
 using namespace Eigen;
 using namespace std;
@@ -18,11 +19,11 @@ struct params{
     double Ixx;
     double Iyy;
     double Izz;
-    double I[3][3];
 };
 
 class quad: public QThread
 {
+    Q_OBJECT
 private:
     matrixds position;
     matrixds orientation;
@@ -44,6 +45,9 @@ private:
     double t = 0;
     double iteration = 0;
     bool is_running = false;
+signals:
+    void emit_quadStates(matrixds);
+
 public:
     quad();
     void init_quad();

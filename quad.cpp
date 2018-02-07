@@ -14,12 +14,10 @@ quad::quad()
 void quad::run()
 {
     while(is_running){
-
         motor = controlhandle->update_motors(t,state);
         model();
-        cout << "state " << endl;
-        print_matrix(state);
-        Sleep(100);
+        emit emit_quadStates(state);
+        Sleep(100);        
     }
 }
 
@@ -73,14 +71,13 @@ void quad::model()
 
     R = rotation_matrix(roll,pitch,yaw);
 
-    double thrust = quad_params.k*(product_matrix(motor,transposed_matrix(motor)).matrix[0][0])/quad_params.mass;
-    thrust = motor.matrix[0][0]/quad_params.mass;
+    double thrust = quad_params.k*(motor.matrix[0][0]+motor.matrix[0][1]+motor.matrix[0][2]+motor.matrix[0][3])/quad_params.mass;
 
     linear_acc = sum_matrix(multiple_matrix((-quad_params.gravity),b3),transposed_matrix(multiple_matrix(thrust,column_matrix(R,2))));
     linear_vel = sum_matrix(linear_vel,multiple_matrix(quad_params.dt,linear_acc));
     position = sum_matrix(position,multiple_matrix(quad_params.dt,linear_vel));
 
-    /*****************************************************************************************************
+    /*****************************************************************************************************/
     double p = angular_vel_quad.matrix[0][0];
     double q = angular_vel_quad.matrix[0][1];
     double r = angular_vel_quad.matrix[0][2];
@@ -88,19 +85,12 @@ void quad::model()
     vectora.matrix = {{((quad_params.Iyy-quad_params.Izz)*q*r/quad_params.Ixx),
                        ((quad_params.Izz-quad_params.Ixx)*p*r/quad_params.Iyy),
                        ((quad_params.Ixx-quad_params.Iyy)*p*q/quad_params.Izz)}};
-    vectorb.matrix = {{(quad_params.l*quad_params.k*(pow(motor.matrix[0][1],2)-pow(motor.matrix[0][3],2))/quad_params.Ixx),
-                       (quad_params.l*quad_params.k*(-pow(motor.matrix[0][0],2)+pow(motor.matrix[0][2],2))/quad_params.Iyy),
-                       (quad_params.b*(pow(motor.matrix[0][0],2)-pow(motor.matrix[0][1],2)+pow(motor.matrix[0][2],2)-pow(motor.matrix[0][3],2))/quad_params.Izz)}};
+    vectorb.matrix = {{(quad_params.l*quad_params.k*(motor.matrix[0][1]-motor.matrix[0][3])/quad_params.Ixx),
+                       (quad_params.l*quad_params.k*(-motor.matrix[0][0]+motor.matrix[0][2])/quad_params.Iyy),
+                       (quad_params.b*(motor.matrix[0][0]-motor.matrix[0][1]+motor.matrix[0][2]-motor.matrix[0][3])/quad_params.Izz)}};
 
     angular_acc = sum_matrix(vectora,vectorb);
-    *****************************************************************************************************/
-
-    matrixds I = resize_matrix(3,3), vec = resize_matrix(3,1);
-    I.matrix = {{quad_params.Ixx,0,0},
-         {0,quad_params.Iyy,0},
-         {0,0,quad_params.Izz}};
-    vec.matrix = {{motor.matrix[0][1]},{motor.matrix[0][2]},{motor.matrix[0][3]}};
-    angular_acc = transposed_matrix(product_matrix(inverse_matrix(I),vec));
+    /*****************************************************************************************************/
 
     angular_vel_quad = sum_matrix(angular_vel_quad,multiple_matrix(quad_params.dt,angular_acc));
     angular_vel = transposed_matrix(product_matrix(inv_transformation_matrix(roll,pitch,yaw),transposed_matrix(angular_vel_quad)));

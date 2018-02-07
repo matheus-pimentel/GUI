@@ -144,7 +144,6 @@ void controller::geometric_tracking(double t, matrixds state)
     des_ang2(2,0) = des_state2(3,0);
 
     MatrixXd R = mds2mxd(rotation_matrix(roll,pitch,yaw));
-    MatrixXd R1 = mds2mxd(rotation_matrix(state1(2,0),state1(2,1),state1(2,2)));
     MatrixXd R_des = mds2mxd(rotation_matrix(des_ang(0,0),des_ang(1,0),des_ang(2,0)));
     MatrixXd T = mds2mxd(transformation_matrix(roll,pitch,yaw));
     MatrixXd T1 = mds2mxd(transformation_matrix(state1(2,0),state1(2,1),state1(2,2)));
@@ -168,16 +167,16 @@ void controller::geometric_tracking(double t, matrixds state)
 
     MatrixXd M = -kp_moment*err - kd_moment*err_omega + omega_hat*mds2mxd(I)*mds2mxd(state).row(3).transpose() - mds2mxd(I)*(omega_hat*R.transpose()*R_des*omega - R.transpose()*R_des*omega_dot);
 
-    /*****************************************************************************************************
-    motor.matrix[0][0] = sqrt(F(0,0)/(4*k) - I.matrix[1][1]*M(1,0)/(2*k*l) + I.matrix[2][2]*M(2,0)/(4*b));
-    motor.matrix[0][1] = sqrt(F(0,0)/(4*k) + I.matrix[0][0]*M(0,0)/(2*k*l) - I.matrix[2][2]*M(2,0)/(4*b));
-    motor.matrix[0][2] = sqrt(F(0,0)/(4*k) + I.matrix[1][1]*M(1,0)/(2*k*l) + I.matrix[2][2]*M(2,0)/(4*b));
-    motor.matrix[0][3] = sqrt(F(0,0)/(4*k) - I.matrix[0][0]*M(0,0)/(2*k*l) - I.matrix[2][2]*M(2,0)/(4*b));
-    *****************************************************************************************************/
+    /*****************************************************************************************************/
+    MatrixXd A(4,4), B(4,1);
+    A << k, k, k, k,
+         0, l*k, 0, -l*k,
+         -l*k, 0, l*k, 0,
+         b, -b, b, -b;
+    B << F(0,0), M(0,0), M(1,0), M(2,0);
 
-    motor.matrix = {{F(0,0), M(0,0), M(1,0), M(2,0)}};
-    cout << err_omega << endl;
-
+    motor = transposed_matrix(mxd2mds(A.inverse()*B));
+    /*****************************************************************************************************/
 }
 
 matrixds controller::next_state(double dt, matrixds state)
