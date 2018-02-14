@@ -46,13 +46,13 @@ private:
     double iteration = 0;
     bool is_running = false;
 signals:
-    void emit_quadStates(matrixds);
-
+    void emit_quadStates(matrixds,matrixds,matrixds,matrixds);
 public:
     quad();
     void init_quad();
     void model();
     void set_params(int select, double value);
+    params get_params();
     void set_waypoints(matrixds matrix);
     matrixds get_waypoints();
     void set_run(bool a);

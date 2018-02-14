@@ -2,6 +2,7 @@
 #define SCENEMODIFIER_H
 
 #include "utils.h"
+#include "quad.h"
 #include <QtCore/QObject>
 
 #include <Qt3DCore/qentity.h>
@@ -29,13 +30,19 @@ class scenemodifier: public QObject
     Q_OBJECT
 public:
     explicit scenemodifier(Qt3DCore::QEntity *rootEntity);
-    void update_sphere(matrixds state);
+    void set_params(params params_q);
+    void set_states(matrixds a,matrixds b,matrixds c,matrixds d);
+    void create_trajectories();
     ~scenemodifier();
 private:
     Qt3DCore::QEntity *m_rootEntity;
     Qt3DCore::QEntity *m_lineEntity;
-    Qt3DCore::QEntity *m_planeEntity;
-    Qt3DCore::QEntity *m_sphereEntity;
+
+    params quad_params;
+    matrixds state;
+    matrixds old_state;
+    matrixds des_state;
+    matrixds old_des_state;
 public slots:
     void createLines(const QVector3D &v0, const QVector3D &v1,
                          const unsigned int index, const bool axis, const QString &lod_param);

@@ -28,7 +28,7 @@ public:
     ~mainwindow();
 
 public slots:
-    void update_quadStates(matrixds new_state);
+    void update_quadStates(matrixds state, matrixds old_state, matrixds des_state, matrixds old_des_state);
 
 private slots:
     void on_start_quad_clicked();
@@ -37,11 +37,11 @@ private slots:
 
 private:
     quad quadrotor;
-    matrixds state;
+    params quad_params;
     bool quad_isrunning = false;
     Ui::mainwindow *ui;
     scenemodifier *modifier;
-
+    Qt3DRender::QCamera *cameraEntity;
 };
 
 #endif // MAINWINDOW_H

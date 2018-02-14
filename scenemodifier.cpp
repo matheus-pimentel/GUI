@@ -1,4 +1,5 @@
 #include "scenemodifier.h"
+#include "iostream"
 #include <QtCore/QDebug>
 #include <QMaterial>
 
@@ -7,29 +8,15 @@ using namespace std;
 scenemodifier::scenemodifier(Qt3DCore::QEntity *rootEntity)
     : m_rootEntity(rootEntity)
 {
+    state = resize_matrix(4,3);
+    old_state = resize_matrix(4,3);
+    des_state = resize_matrix(5,3);
+    old_des_state = resize_matrix(5,3);
+
     this->createLines(QVector3D(0, 0, 0), QVector3D(0, 0, 1), 1, true, "");
+    this->createLines(QVector3D(0, 0, 0), QVector3D(0, 1, 0), 1, true, "");
+    this->createLines(QVector3D(0, 0, 0), QVector3D(1, 0, 0), 1, true, "");
 
-    // Plane shape data
-    Qt3DExtras::QPlaneMesh *planeMesh = new Qt3DExtras::QPlaneMesh();
-    planeMesh->setWidth(2);
-    planeMesh->setHeight(2);
-
-    // Plane mesh transform
-    Qt3DCore::QTransform *planeTransform = new Qt3DCore::QTransform();
-    planeTransform->setScale(40.0f);
-    planeTransform->setRotationX(90.0f);
-    planeTransform->setRotationY(0.0f);
-    planeTransform->setRotationZ(0.0f);
-    planeTransform->setTranslation(QVector3D(0,0,0));
-
-    Qt3DExtras::QPhongMaterial *planeMaterial = new Qt3DExtras::QPhongMaterial();
-    planeMaterial->setDiffuse(QColor("white"));
-
-    // Plane
-    m_planeEntity = new Qt3DCore::QEntity(m_rootEntity);
-    m_planeEntity->addComponent(planeMesh);
-    m_planeEntity->addComponent(planeTransform);
-    m_planeEntity->addComponent(planeMaterial);
 }
 scenemodifier::~scenemodifier()
 {
@@ -126,4 +113,23 @@ void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
         m_lineEntity->setObjectName(QString::number(index)+ ":" +lod_param);
         Qt3DRender::QObjectPicker createObjectPickerForEntity(m_lineEntity);
     }
+}
+
+void scenemodifier::create_trajectories()
+{
+    this->createLines(QVector3D(state.matrix[0][0], state.matrix[0][1], state.matrix[0][2]), QVector3D(old_state.matrix[0][0], old_state.matrix[0][1], old_state.matrix[0][2]), 2, true, "");
+    this->createLines(QVector3D(des_state.matrix[0][0], des_state.matrix[0][1], des_state.matrix[0][2]), QVector3D(old_des_state.matrix[0][0], old_des_state.matrix[0][1], old_des_state.matrix[0][2]), 0, true, "");
+}
+
+void scenemodifier::set_params(params params_q)
+{
+    quad_params = params_q;
+}
+
+void scenemodifier::set_states(matrixds a, matrixds b, matrixds c, matrixds d)
+{
+    state = a;
+    old_state = b;
+    des_state = c;
+    old_des_state = d;
 }

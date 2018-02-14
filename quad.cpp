@@ -14,10 +14,13 @@ quad::quad()
 void quad::run()
 {
     while(is_running){
+        old_des_state = des_state;
+        old_state = state;
+        des_state = controlhandle->trajhandle(t);
         motor = controlhandle->update_motors(t,state);
         model();
-        emit emit_quadStates(state);
-        Sleep(100);        
+        emit emit_quadStates(state, old_state, des_state, old_des_state);
+        Sleep(20);
     }
 }
 
@@ -152,6 +155,11 @@ void quad::set_params(int select, double value)
     default:
         break;
     }
+}
+
+params quad::get_params()
+{
+    return quad_params;
 }
 
 void quad::set_waypoints(matrixds matrix)

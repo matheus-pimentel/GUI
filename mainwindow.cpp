@@ -22,21 +22,18 @@ mainwindow::mainwindow(QWidget *parent) :
     ui->params_options->addItem("Iyy");
     ui->params_options->addItem("Izz");
     init_3dquad();
-    state = resize_matrix(4,3);
-    connect(&quadrotor, SIGNAL(emit_quadStates(matrixds)), this, SLOT(update_quadStates(matrixds)), Qt::QueuedConnection);
+    connect(&quadrotor, SIGNAL(emit_quadStates(matrixds,matrixds,matrixds,matrixds)), this, SLOT(update_quadStates(matrixds,matrixds,matrixds,matrixds)), Qt::QueuedConnection);
 }
 
 mainwindow::~mainwindow()
 {
     delete ui;
 }
-void mainwindow::update_quadStates(matrixds new_state)
+void mainwindow::update_quadStates(matrixds state, matrixds old_state, matrixds des_state, matrixds old_des_state)
 {
-    print_matrix(state);
-    double x1 = float(state.matrix[0][0]),x2 = float(state.matrix[0][1]),x3 = float(state.matrix[0][2]);
-    double y1 = float(new_state.matrix[0][0]), y2 = float(new_state.matrix[0][1]), y3 = float(new_state.matrix[0][2]);
-    modifier->createLines(QVector3D(x1,x2,x3),QVector3D(y1,y2,y3),2,true,"");
-    state = new_state;
+    modifier->set_states(state, old_state, des_state, old_des_state);
+    modifier->create_trajectories();
+    cameraEntity->setViewCenter(QVector3D(state.matrix[0][0], state.matrix[0][1], state.matrix[0][2]));
 }
 void mainwindow::on_start_quad_clicked()
 {
@@ -85,8 +82,9 @@ void mainwindow::on_change_params_clicked()
     {
 
     }
-
     quadrotor.set_params(num_params,value);
+    quad_params = quadrotor.get_params();
+    modifier->set_params(quad_params);
 }
 void mainwindow::on_add_waypoints_clicked()
 {
@@ -117,24 +115,20 @@ void mainwindow::on_add_waypoints_clicked()
 void mainwindow::init_3dquad()
 {
     Qt3DExtras::Qt3DWindow *view = new Qt3DExtras::Qt3DWindow();
-    view->defaultFrameGraph()->setClearColor(QColor("Grey"));
+    view->defaultFrameGraph()->setClearColor(QColor("White"));
     QWidget *container = QWidget::createWindowContainer(view);
 
     ui->vlayout->setAlignment(Qt::AlignJustify);
     ui->hlayout->addWidget(container,1);
     ui->hlayout->addLayout(ui->vlayout);
 
-    //inputs
-//    Qt3DInput::QInputAspect *input = new Qt3DInput::QInputAspect;
-//    view->registerAspect(input);
-
     // Root entity
     Qt3DCore::QEntity *rootEntity = new Qt3DCore::QEntity();
 
     // Camera
-    Qt3DRender::QCamera *cameraEntity = view->camera();
+    cameraEntity = view->camera();
     cameraEntity->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
-    cameraEntity->setPosition(QVector3D(5.0f, 0, 1.0f));
+    cameraEntity->setPosition(QVector3D(3.0f, 1.0f, 2.0f));
     cameraEntity->setUpVector(QVector3D(0, 0, 1));
     cameraEntity->setViewCenter(QVector3D(0, 0, 0));
 
@@ -152,5 +146,6 @@ void mainwindow::init_3dquad()
     camController->setCamera(cameraEntity);
 
     modifier = new scenemodifier(rootEntity);
+    modifier->set_params(quadrotor.get_params());
     view->setRootEntity(rootEntity);
 }
