@@ -15,9 +15,9 @@ controller::controller()
     I = resize_matrix(3,3);
 
     kp_thrust = 20;
-    kd_thrust = 0.1;
-    kp_moment = 3.5;
-    kd_moment = 0.001;
+    kd_thrust = 0.01;
+    kp_moment = 20;
+    kd_moment = 0.01;
 }
 
 matrixds controller::trajhandle(double t)

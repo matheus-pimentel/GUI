@@ -33,8 +33,8 @@ matrixds transformation_matrix(double roll, double pitch, double yaw)
     matrixds T;
     T.matrix = matrixd(3, vector<double>(3, 0.0));
     T.matrix = {{(cos(pitch)), (0), (-cos(roll)*sin(pitch))},
-         {(0), (1), (sin(roll))},
-         {(sin(pitch)), (0), (cos(roll)*cos(pitch))}};
+                {(0), (1), (sin(roll))},
+                {(sin(pitch)), (0), (cos(roll)*cos(pitch))}};
     T.l = 3;
     T.c = 3;
     return T;

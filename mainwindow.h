@@ -28,12 +28,14 @@ public:
     ~mainwindow();
 
 public slots:
-    void update_quadStates(matrixds state, matrixds old_state, matrixds des_state, matrixds old_des_state);
+    void update_quadStates(matrixds state, matrixds old_state, matrixds des_state, matrixds old_des_state, double t);
 
 private slots:
     void on_start_quad_clicked();
+    void on_reset_quad_clicked();
     void on_change_params_clicked();
     void on_add_waypoints_clicked();
+    void on_reset_way_clicked();
 
 private:
     quad quadrotor;
@@ -41,6 +43,8 @@ private:
     bool quad_isrunning = false;
     Ui::mainwindow *ui;
     scenemodifier *modifier;
+    Qt3DCore::QEntity *rootEntity;
+    Qt3DExtras::Qt3DWindow *view;
     Qt3DRender::QCamera *cameraEntity;
 };
 

@@ -8,7 +8,15 @@ using namespace std;
 
 quad::quad()
 {
+    controlhandle = new controller;
     init_quad();
+    init_params();
+    init_waypoints();
+
+//    waypoints.l = 2;
+//    waypoints.matrix = {{0,0,0,0,0},
+//                        {1,1,1,1,2}};
+//    controlhandle->set_waypoints(waypoints);
 }
 
 void quad::run()
@@ -19,8 +27,8 @@ void quad::run()
         des_state = controlhandle->trajhandle(t);
         motor = controlhandle->update_motors(t,state);
         model();
-        emit emit_quadStates(state, old_state, des_state, old_des_state);
-        Sleep(20);
+        emit emit_quadStates(state, old_state, des_state, old_des_state,t);
+        Sleep(quad_params.dt*1000);
     }
 }
 
@@ -40,7 +48,18 @@ void quad::init_quad()
     motor = resize_matrix(1,4);
     b3 = resize_matrix(1,3);
     b3.matrix = {{0,0,1}};
+    t = 0;
+    iteration = 0;
+}
 
+void quad::init_waypoints()
+{
+    waypoints = resize_matrix(100,5);
+    waypoints.l = 1;
+}
+
+void quad::init_params()
+{
     set_params(1,0.468);
     set_params(2,0.225);
     set_params(3,1.14*pow(10,-7));
@@ -50,16 +69,7 @@ void quad::init_quad()
     set_params(7,0.008801);
     set_params(8,9.81);
     set_params(9,0.02);
-
-    controlhandle = new controller;
     controlhandle->set_params(quad_params.mass,quad_params.dt,quad_params.gravity,quad_params.Ixx,quad_params.Iyy,quad_params.Izz,quad_params.b,quad_params.k,quad_params.l);
-
-    waypoints = resize_matrix(100,5);
-    waypoints.l = 2;
-    waypoints.matrix = {{0,0,0,0,0},
-                        {1,1,1,1,1}};
-    controlhandle->set_waypoints(waypoints);
-
 }
 
 void quad::model()
