@@ -38,14 +38,19 @@ matrixds controller::trajhandle(double t)
     aux = resize_matrix(3,8);
     aux_phi = resize_matrix(2,4);
 
+    matrixds vel_waypoints = resize_matrix(waypoints.l,waypoints.c);
+    for(i = 1; i < waypoints.l-1; i++){
+        vel_waypoints.matrix[i] = mxd2mds(0.5*(mds2mxd(line_matrix(waypoints,i+1))-mds2mxd(line_matrix(waypoints,i-1)))).matrix[0];
+    }
+
     for(i = 0; i < waypoints.l; i++){
         if( t < waypoints.matrix[i][4]){
             t_init = waypoints.matrix[i-1][4];
             t_final = waypoints.matrix[i][4];
             b.matrix = {{waypoints.matrix[i-1][0], waypoints.matrix[i-1][1], waypoints.matrix[i-1][2]},
                         {waypoints.matrix[i][0], waypoints.matrix[i][1], waypoints.matrix[i][2]},
-                        {0,0,0},
-                        {0,0,0},
+                        {vel_waypoints.matrix[i-1][0],vel_waypoints.matrix[i-1][1],vel_waypoints.matrix[i-1][2]},
+                        {vel_waypoints.matrix[i][0],vel_waypoints.matrix[i][1],vel_waypoints.matrix[i][2]},
                         {0,0,0},
                         {0,0,0},
                         {0,0,0},
@@ -167,7 +172,6 @@ void controller::geometric_tracking(double t, matrixds state)
 
     MatrixXd M = -kp_moment*err - kd_moment*err_omega + omega_hat*mds2mxd(I)*mds2mxd(state).row(3).transpose() - mds2mxd(I)*(omega_hat*R.transpose()*R_des*omega - R.transpose()*R_des*omega_dot);
 
-    /*****************************************************************************************************/
     MatrixXd A(4,4), B(4,1);
     A << k, k, k, k,
          0, l*k, 0, -l*k,
@@ -176,7 +180,6 @@ void controller::geometric_tracking(double t, matrixds state)
     B << F(0,0), M(0,0), M(1,0), M(2,0);
 
     motor = transposed_matrix(mxd2mds(A.inverse()*B));
-    /*****************************************************************************************************/
 }
 
 matrixds controller::next_state(double dt, matrixds state)
@@ -201,7 +204,8 @@ matrixds controller::next_state(double dt, matrixds state)
 void controller::set_waypoints(matrixds points)
 {
     waypoints = points;
-    print_matrix(waypoints);
+//    print_matrix(waypoints);
+    cout << mds2mxd(waypoints) << endl;
 }
 
 void controller::set_params(double mass1, double dt1, double gravity1, double Ixx, double Iyy, double Izz, double b1, double k1, double l1)

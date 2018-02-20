@@ -31,8 +31,8 @@ class scenemodifier: public QObject
     Q_OBJECT
 public:
     explicit scenemodifier(Qt3DCore::QEntity *rootEntity);
-    void init_plot();
     void update_plot();
+    void create_grid();
     void set_params(params params_q);
     void set_states(matrixds a,matrixds b,matrixds c,matrixds d);
     void create_trajectories();

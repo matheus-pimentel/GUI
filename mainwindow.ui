@@ -14,19 +14,6 @@
    <string>mainwindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="start_quad">
-    <property name="geometry">
-     <rect>
-      <x>930</x>
-      <y>530</y>
-      <width>141</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Play</string>
-    </property>
-   </widget>
    <widget class="QWidget" name="horizontalLayoutWidget">
     <property name="geometry">
      <rect>
@@ -45,7 +32,7 @@
    <widget class="QLCDNumber" name="lcd_tempo">
     <property name="geometry">
      <rect>
-      <x>50</x>
+      <x>60</x>
       <y>10</y>
       <width>51</width>
       <height>41</height>
@@ -56,7 +43,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>290</y>
+      <y>160</y>
       <width>111</width>
       <height>231</height>
      </rect>
@@ -224,26 +211,13 @@
      <string>Time</string>
     </property>
    </widget>
-   <widget class="QPushButton" name="reset_quad">
-    <property name="geometry">
-     <rect>
-      <x>930</x>
-      <y>580</y>
-      <width>141</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Reset</string>
-    </property>
-   </widget>
    <widget class="QGroupBox" name="groupBox">
     <property name="geometry">
      <rect>
-      <x>0</x>
-      <y>530</y>
-      <width>231</width>
-      <height>80</height>
+      <x>10</x>
+      <y>400</y>
+      <width>111</width>
+      <height>121</height>
      </rect>
     </property>
     <property name="title">
@@ -254,7 +228,7 @@
       <rect>
        <x>50</x>
        <y>20</y>
-       <width>71</width>
+       <width>51</width>
        <height>22</height>
       </rect>
      </property>
@@ -262,24 +236,11 @@
     <widget class="QLineEdit" name="params_value">
      <property name="geometry">
       <rect>
-       <x>70</x>
+       <x>60</x>
        <y>50</y>
-       <width>51</width>
+       <width>41</width>
        <height>21</height>
       </rect>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="change_params">
-     <property name="geometry">
-      <rect>
-       <x>130</x>
-       <y>20</y>
-       <width>91</width>
-       <height>51</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Change Params</string>
      </property>
     </widget>
     <widget class="QLabel" name="labeltype">
@@ -308,6 +269,45 @@
       <string>Value</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="change_params">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Change Params</string>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QPushButton" name="start_quad">
+    <property name="geometry">
+     <rect>
+      <x>10</x>
+      <y>60</y>
+      <width>51</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Play</string>
+    </property>
+   </widget>
+   <widget class="QPushButton" name="reset_quad">
+    <property name="geometry">
+     <rect>
+      <x>70</x>
+      <y>60</y>
+      <width>41</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Reset</string>
+    </property>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">

@@ -23,13 +23,33 @@ scenemodifier::scenemodifier(Qt3DCore::QEntity *rootEntity)
     b2.resize(1,3);
     b3.resize(1,3);
 
-    this->createLines(QVector3D(0, 0, 0), QVector3D(0, 0, 1), 1, true, "");
-    this->createLines(QVector3D(0, 0, 0), QVector3D(0, 1, 0), 1, true, "");
-    this->createLines(QVector3D(0, 0, 0), QVector3D(1, 0, 0), 1, true, "");
-
+    create_grid();
 }
 scenemodifier::~scenemodifier()
 {
+}
+
+void scenemodifier::create_grid()
+{
+    int x_min = -3, x_max = 3, y_min = -3, y_max = 3, z_min = 0, z_max = 3, i;
+    for(i = x_min; i <= x_max; i++){
+        this->createLines(QVector3D(i, y_min, 0), QVector3D(i, y_max, 0), 1, true, "");
+    }
+    for(i = y_min; i <= y_max; i++){
+        this->createLines(QVector3D(x_min, i, 0), QVector3D(x_max, i, 0), 1, true, "");
+    }
+    for(i = x_min; i <= x_max; i++){
+        this->createLines(QVector3D(i, y_min, z_min), QVector3D(i, y_min, z_max), 1, true, "");
+    }
+    for(i = z_min; i <= z_max; i++){
+        this->createLines(QVector3D(x_min, y_min, i), QVector3D(x_max, y_min, i), 1, true, "");
+    }
+    for(i = y_min; i <= y_max; i++){
+        this->createLines(QVector3D(x_min, i, z_min), QVector3D(x_min, i, z_max), 1, true, "");
+    }
+    for(i = z_min; i <= z_max; i++){
+        this->createLines(QVector3D(x_min, y_min, i), QVector3D(x_min, y_max, i), 1, true, "");
+    }
 }
 
 void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
@@ -129,23 +149,13 @@ void scenemodifier::create_trajectories()
 {
     this->createLines(QVector3D(state.matrix[0][0], state.matrix[0][1], state.matrix[0][2]), QVector3D(old_state.matrix[0][0], old_state.matrix[0][1], old_state.matrix[0][2]), 2, true, "");
     this->createLines(QVector3D(des_state.matrix[0][0], des_state.matrix[0][1], des_state.matrix[0][2]), QVector3D(old_des_state.matrix[0][0], old_des_state.matrix[0][1], old_des_state.matrix[0][2]), 0, true, "");
+    // state      - blue
+    // des_state  - red
 }
 
 void scenemodifier::set_params(params params_q)
 {
     quad_params = params_q;
-}
-
-void scenemodifier::set_states(matrixds a, matrixds b, matrixds c, matrixds d)
-{
-    state = a;
-    old_state = b;
-    des_state = c;
-    old_des_state = d;
-}
-
-void scenemodifier::init_plot()
-{ 
     MatrixXd pos(1,3);
     MatrixXd motor1_pos(1,3), motor2_pos(1,3), motor3_pos(1,3), motor4_pos(1,3), up_pos(1,3);
 
@@ -266,7 +276,7 @@ void scenemodifier::init_plot()
     arm1Transform->setTranslation(QVector3D(pos(0,0),pos(0,1),pos(0,2)));
 
     Qt3DExtras::QPhongMaterial *arm1Material = new Qt3DExtras::QPhongMaterial();
-    arm1Material->setDiffuse(QColor("Blue"));
+    arm1Material->setDiffuse(QColor("Black"));
 
     // arm1
     quad_arm1 = new Qt3DCore::QEntity(m_rootEntity);
@@ -288,7 +298,7 @@ void scenemodifier::init_plot()
     arm2Transform->setTranslation(QVector3D(pos(0,0),pos(0,1),pos(0,2)));
 
     Qt3DExtras::QPhongMaterial *arm2Material = new Qt3DExtras::QPhongMaterial();
-    arm2Material->setDiffuse(QColor("Blue"));
+    arm2Material->setDiffuse(QColor("Black"));
 
     // arm2
     quad_arm2 = new Qt3DCore::QEntity(m_rootEntity);
@@ -310,13 +320,21 @@ void scenemodifier::init_plot()
     upTransform->setTranslation(QVector3D(up_pos(0,0),up_pos(0,1),up_pos(0,2)));
 
     Qt3DExtras::QPhongMaterial *upMaterial = new Qt3DExtras::QPhongMaterial();
-    upMaterial->setDiffuse(QColor("Blue"));
+    upMaterial->setDiffuse(QColor("Black"));
 
     // up
     quad_up = new Qt3DCore::QEntity(m_rootEntity);
     quad_up->addComponent(up);
     quad_up->addComponent(upMaterial);
     quad_up->addComponent(upTransform);
+}
+
+void scenemodifier::set_states(matrixds a, matrixds b, matrixds c, matrixds d)
+{
+    state = a;
+    old_state = b;
+    des_state = c;
+    old_des_state = d;
 }
 
 void scenemodifier::update_plot()

@@ -102,7 +102,9 @@ void mainwindow::on_change_params_clicked()
     {
     }
     quadrotor.set_params(num_params,value);
-    modifier->set_params(quadrotor.get_params());
+    quadrotor.init_quad();
+    init_3dquad();
+    ui->lcd_tempo->display(0);
 }
 void mainwindow::on_add_waypoints_clicked()
 {
@@ -138,9 +140,9 @@ void mainwindow::init_3dquad()
     // Camera
     cameraEntity = view->camera();
     cameraEntity->lens()->setPerspectiveProjection(45.0f, 16.0f/9.0f, 0.1f, 1000.0f);
-    cameraEntity->setPosition(QVector3D(2.0f, 1.0f, 1.5f));
+    cameraEntity->setPosition(QVector3D(4, 4, 2.5f));
     cameraEntity->setUpVector(QVector3D(0, 0, 1));
-    cameraEntity->setViewCenter(QVector3D(0, 0, 0));
+    cameraEntity->setViewCenter(QVector3D(-3, -3, 0));
 
     Qt3DCore::QEntity *lightEntity = new Qt3DCore::QEntity(rootEntity);
     Qt3DRender::QPointLight *light = new Qt3DRender::QPointLight(lightEntity);
@@ -157,6 +159,5 @@ void mainwindow::init_3dquad()
 
     modifier = new scenemodifier(rootEntity);
     modifier->set_params(quadrotor.get_params());
-    modifier->init_plot();
     view->setRootEntity(rootEntity);
 }

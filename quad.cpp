@@ -13,10 +13,13 @@ quad::quad()
     init_params();
     init_waypoints();
 
-//    waypoints.l = 2;
-//    waypoints.matrix = {{0,0,0,0,0},
-//                        {1,1,1,1,2}};
-//    controlhandle->set_waypoints(waypoints);
+    waypoints.l = 5;
+    waypoints.matrix = {{0   ,0   ,0  ,0    ,0},
+                        {0.5 ,1   ,1  ,0    ,1},
+                        {1   ,0   ,2  ,0    ,2},
+                        {1.5 ,-1  ,1  ,0    ,3},
+                        {2   ,0   ,0  ,0    ,4}};
+    controlhandle->set_waypoints(waypoints);
 }
 
 void quad::run()
@@ -28,7 +31,7 @@ void quad::run()
         motor = controlhandle->update_motors(t,state);
         model();
         emit emit_quadStates(state, old_state, des_state, old_des_state,t);
-        Sleep(quad_params.dt*1000);
+        Sleep(quad_params.dt*500);
     }
 }
 
@@ -90,7 +93,6 @@ void quad::model()
     linear_vel = sum_matrix(linear_vel,multiple_matrix(quad_params.dt,linear_acc));
     position = sum_matrix(position,multiple_matrix(quad_params.dt,linear_vel));
 
-    /*****************************************************************************************************/
     double p = angular_vel_quad.matrix[0][0];
     double q = angular_vel_quad.matrix[0][1];
     double r = angular_vel_quad.matrix[0][2];
@@ -103,7 +105,6 @@ void quad::model()
                        (quad_params.b*(motor.matrix[0][0]-motor.matrix[0][1]+motor.matrix[0][2]-motor.matrix[0][3])/quad_params.Izz)}};
 
     angular_acc = sum_matrix(vectora,vectorb);
-    /*****************************************************************************************************/
 
     angular_vel_quad = sum_matrix(angular_vel_quad,multiple_matrix(quad_params.dt,angular_acc));
     angular_vel = transposed_matrix(product_matrix(inv_transformation_matrix(roll,pitch,yaw),transposed_matrix(angular_vel_quad)));
