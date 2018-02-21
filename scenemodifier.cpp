@@ -33,22 +33,22 @@ void scenemodifier::create_grid()
 {
     int x_min = -3, x_max = 3, y_min = -3, y_max = 3, z_min = 0, z_max = 3, i;
     for(i = x_min; i <= x_max; i++){
-        this->createLines(QVector3D(i, y_min, 0), QVector3D(i, y_max, 0), 1, true, "");
+        this->createLines(QVector3D(i, y_min, 0), QVector3D(i, y_max, 0), 3, true, "");
     }
     for(i = y_min; i <= y_max; i++){
-        this->createLines(QVector3D(x_min, i, 0), QVector3D(x_max, i, 0), 1, true, "");
+        this->createLines(QVector3D(x_min, i, 0), QVector3D(x_max, i, 0), 3, true, "");
     }
     for(i = x_min; i <= x_max; i++){
-        this->createLines(QVector3D(i, y_min, z_min), QVector3D(i, y_min, z_max), 1, true, "");
+        this->createLines(QVector3D(i, y_min, z_min), QVector3D(i, y_min, z_max), 3, true, "");
     }
     for(i = z_min; i <= z_max; i++){
-        this->createLines(QVector3D(x_min, y_min, i), QVector3D(x_max, y_min, i), 1, true, "");
+        this->createLines(QVector3D(x_min, y_min, i), QVector3D(x_max, y_min, i), 3, true, "");
     }
     for(i = y_min; i <= y_max; i++){
-        this->createLines(QVector3D(x_min, i, z_min), QVector3D(x_min, i, z_max), 1, true, "");
+        this->createLines(QVector3D(x_min, i, z_min), QVector3D(x_min, i, z_max), 3, true, "");
     }
     for(i = z_min; i <= z_max; i++){
-        this->createLines(QVector3D(x_min, y_min, i), QVector3D(x_min, y_max, i), 1, true, "");
+        this->createLines(QVector3D(x_min, y_min, i), QVector3D(x_min, y_max, i), 3, true, "");
     }
 }
 
@@ -137,6 +137,12 @@ void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
     m_lineEntity = new Qt3DCore::QEntity(m_rootEntity);
     m_lineEntity->addComponent(line_mesh);
     m_lineEntity->addComponent(material);
+
+    if (index == 3){
+        Qt3DExtras::QPhongMaterial *lineMaterial = new Qt3DExtras::QPhongMaterial();
+        lineMaterial->setAmbient(QColor("Gray"));
+        m_lineEntity->addComponent(lineMaterial);
+    }
 
     if(!axis)
     {
