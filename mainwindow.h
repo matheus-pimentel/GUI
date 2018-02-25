@@ -34,6 +34,7 @@ private slots:
     void on_start_quad_clicked();
     void on_reset_quad_clicked();
     void on_change_params_clicked();
+    void on_change_controller_clicked();
     void on_add_waypoints_clicked();
     void on_reset_way_clicked();
 

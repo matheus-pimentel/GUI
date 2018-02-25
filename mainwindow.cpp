@@ -14,6 +14,7 @@ mainwindow::mainwindow(QWidget *parent) :
     qRegisterMetaType<matrixds>("matrixds");
     ui->setupUi(this);
     setWindowTitle("GUI");
+
     ui->params_options->addItem("Mass");
     ui->params_options->addItem("L");
     ui->params_options->addItem("B");
@@ -21,6 +22,11 @@ mainwindow::mainwindow(QWidget *parent) :
     ui->params_options->addItem("Ixx");
     ui->params_options->addItem("Iyy");
     ui->params_options->addItem("Izz");
+
+    ui->controller_options->addItem("Linear");
+    ui->controller_options->addItem("Thrust Up");
+    ui->controller_options->addItem("Geometric Tracking");
+
     ui->lcd_tempo->setPalette(Qt::black);
 
     view = new Qt3DExtras::Qt3DWindow();
@@ -105,6 +111,22 @@ void mainwindow::on_change_params_clicked()
     quadrotor.init_quad();
     init_3dquad();
     ui->lcd_tempo->display(0);
+}
+void mainwindow::on_change_controller_clicked()
+{
+    string quad_controller_decision = ui->controller_options->currentText().toUtf8().constData();
+    if (quad_controller_decision == "Linear"){
+        quadrotor.set_controller(1);
+    }
+    else if (quad_controller_decision == "Thrust Up"){
+        quadrotor.set_controller(2);
+    }
+    else if (quad_controller_decision == "Geometric Tracking"){
+        quadrotor.set_controller(3);
+    }
+    else{
+        quadrotor.set_controller(3);
+    }
 }
 void mainwindow::on_add_waypoints_clicked()
 {

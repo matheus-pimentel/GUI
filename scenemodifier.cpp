@@ -127,6 +127,9 @@ void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
     line_mesh->setIndexOffset(0);
     line_mesh->setFirstInstance(0);
     line_mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
+    if(index == 4){
+        line_mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Points);
+    }
     line_mesh->setGeometry(geometry);
     line_mesh->setVertexCount(2);
 
@@ -143,6 +146,11 @@ void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
         lineMaterial->setAmbient(QColor("Gray"));
         m_lineEntity->addComponent(lineMaterial);
     }
+    else if(index == 4){
+        Qt3DExtras::QPhongMaterial *lineMaterial = new Qt3DExtras::QPhongMaterial();
+        lineMaterial->setAmbient(QColor("Black"));
+        m_lineEntity->addComponent(lineMaterial);
+    }
 
     if(!axis)
     {
@@ -153,10 +161,8 @@ void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
 
 void scenemodifier::create_trajectories()
 {
-    this->createLines(QVector3D(state.matrix[0][0], state.matrix[0][1], state.matrix[0][2]), QVector3D(old_state.matrix[0][0], old_state.matrix[0][1], old_state.matrix[0][2]), 2, true, "");
-    this->createLines(QVector3D(des_state.matrix[0][0], des_state.matrix[0][1], des_state.matrix[0][2]), QVector3D(old_des_state.matrix[0][0], old_des_state.matrix[0][1], old_des_state.matrix[0][2]), 0, true, "");
-    // state      - blue
-    // des_state  - red
+    this->createLines(QVector3D(state.matrix[0][0], state.matrix[0][1], state.matrix[0][2]), QVector3D(old_state.matrix[0][0], old_state.matrix[0][1], old_state.matrix[0][2]), 1, true, "");
+    this->createLines(QVector3D(des_state.matrix[0][0], des_state.matrix[0][1], des_state.matrix[0][2]), QVector3D(old_des_state.matrix[0][0], old_des_state.matrix[0][1], old_des_state.matrix[0][2]), 4, true, "");
 }
 
 void scenemodifier::set_params(params params_q)

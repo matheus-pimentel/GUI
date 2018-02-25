@@ -56,6 +56,7 @@ public:
     void set_params(int select, double value);
     params get_params();
     void set_waypoints(matrixds matrix);
+    void set_controller(int a);
     matrixds get_waypoints();
     void set_run(bool a);
     ~quad();

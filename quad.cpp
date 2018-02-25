@@ -19,6 +19,21 @@ quad::quad()
                         {1   ,0   ,2  ,0    ,2},
                         {1.5 ,-1  ,1  ,0    ,3},
                         {2   ,0   ,0  ,0    ,4}};
+
+    waypoints.l = 12;
+    waypoints.matrix = {{0, 0, 0, 0, 0},
+                        {-0.4, 0, 1, 0, 2},
+                        {0, 0, 1, 0, 3},
+                        {0.2, 0, 1.6, 0, 4},
+                        {0.4, 0.4, 1, 1.57, 5},
+                        {0.6, 0, 0.4, 3.14, 5.8},
+                        {0.8, -0.4, 1, 4.71, 6.6},
+                        {1, 0, 1.6, 6.28, 7.4},
+                        {1.2, 0.4, 1, 7.85, 8.2},
+                        {1.4, 0, 0.4, 9.42, 9},
+                        {1.6, -0.4, 1, 10.99, 9.8},
+                        {1.8, 0, 1.6, 12.56, 10.6}};
+
     controlhandle->set_waypoints(waypoints);
 }
 
@@ -178,6 +193,11 @@ void quad::set_waypoints(matrixds matrix)
     waypoints.matrix[waypoints.l] = {{matrix.matrix[0][0], matrix.matrix[0][1], matrix.matrix[0][2], matrix.matrix[0][3], matrix.matrix[0][4]}};
     waypoints.l++;
     controlhandle->set_waypoints(waypoints);
+}
+
+void quad::set_controller(int a)
+{
+    controlhandle->set_controller(a);
 }
 
 matrixds quad::get_waypoints()
