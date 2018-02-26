@@ -2,6 +2,7 @@
 #include "utils.h"
 #include "math.h"
 #include "iostream"
+#include "time.h"
 
 using namespace std;
 
@@ -30,6 +31,8 @@ controller::controller()
     gt_gain.kd_thrust = 0.01;
     gt_gain.kp_moment = 20;
     gt_gain.kd_moment = 0.01;
+
+    srand(time(NULL));
 }
 
 matrixds controller::trajhandle(double t)
@@ -130,15 +133,41 @@ matrixds controller::trajhandle(double t)
 
 matrixds controller::update_motors(double t, matrixds state)
 {
+    matrixds measured_state = resize_matrix(4,3);
+
+    for(int i = 0; i < state.l; i++){
+        for(int j = 0; j < state.c; j++){
+            int signal;
+            double mag;
+            if((double)rand()/RAND_MAX > 0.5)
+                signal = 1;
+            else
+                signal = -1;
+            if(i <= 1)
+                mag = 0.01;
+            else
+                mag = 0.01046;
+            measured_state.matrix[i][j] = state.matrix[i][j] + signal*mag*(double)rand()/RAND_MAX;
+        }
+    }
+
     if (choose_controller == 1){
-        linear_controller(t,state);
+        linear_controller(t,measured_state);
     }
     else if (choose_controller == 2){
-        thrust_up_controller(t,state);
+        thrust_up_controller(t,measured_state);
     }
     else{
-        geometric_tracking(t,state);
+        geometric_tracking(t,measured_state);
     }
+        for(int i = 0; i < 4; i++){
+            if(motor.matrix[0][i] > 2250000){
+                motor.matrix[0][i] = 2250000;
+            }else if (motor.matrix[0][i] < -2250000){
+                motor.matrix[0][i] = -2250000;
+            }
+            else{}
+        }
     return motor;
 }
 
