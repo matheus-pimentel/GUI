@@ -28,6 +28,11 @@ controller::controller()
     tu_gain.kd_moment = 0.01;
 
     gt_gain.kp_thrust = 20;
+    gt_gain.kd_thrust = 0.1;
+    gt_gain.kp_moment = 2;
+    gt_gain.kd_moment = 0.01;
+
+    gt_gain.kp_thrust = 20;
     gt_gain.kd_thrust = 0.01;
     gt_gain.kp_moment = 20;
     gt_gain.kd_moment = 0.01;
@@ -143,10 +148,7 @@ matrixds controller::update_motors(double t, matrixds state)
                 signal = 1;
             else
                 signal = -1;
-            if(i <= 1)
-                mag = 0.01;
-            else
-                mag = 0.01046;
+            mag = 0.01;
             measured_state.matrix[i][j] = state.matrix[i][j] + signal*mag*(double)rand()/RAND_MAX;
         }
     }
@@ -399,7 +401,6 @@ matrixds controller::next_state(double dt, matrixds state)
 void controller::set_waypoints(matrixds points)
 {
     waypoints = points;
-//    print_matrix(waypoints);
     cout << mds2mxd(waypoints) << endl;
 }
 
@@ -414,6 +415,13 @@ void controller::set_params(double mass1, double dt1, double gravity1, double Ix
     b = b1;
     k = k1;
     l = l1;
+}
 
+void controller::set_gt_gain(double kp_thrust, double kd_thrust, double kp_moment, double kd_moment)
+{
+    gt_gain.kp_thrust = kp_thrust;
+    gt_gain.kd_thrust = kd_thrust;
+    gt_gain.kp_moment = kp_moment;
+    gt_gain.kd_moment = kd_moment;
 }
 

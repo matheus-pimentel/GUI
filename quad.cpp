@@ -181,6 +181,7 @@ void quad::set_params(int select, double value)
     default:
         break;
     }
+    controlhandle->set_params(quad_params.mass,quad_params.dt,quad_params.gravity,quad_params.Ixx,quad_params.Iyy,quad_params.Izz,quad_params.b,quad_params.k,quad_params.l);
 }
 
 params quad::get_params()

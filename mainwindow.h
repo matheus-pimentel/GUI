@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include "quad.h"
 #include "scenemodifier.h"
+#include "QMessageBox"
 
 #include <Qt3DExtras/qt3dwindow.h>
 #include <Qt3DExtras/qforwardrenderer.h>

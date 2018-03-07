@@ -30,14 +30,16 @@ SOURCES += \
     utils.cpp \
     quad.cpp \
     controller.cpp \
-    scenemodifier.cpp
+    scenemodifier.cpp \
+    pso.cpp
 
 HEADERS += \
         mainwindow.h \
     utils.h \
     quad.h \
     controller.h \
-    scenemodifier.h
+    scenemodifier.h \
+    pso.h
 
 FORMS += \
         mainwindow.ui

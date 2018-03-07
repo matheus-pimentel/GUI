@@ -150,7 +150,10 @@ void mainwindow::on_add_waypoints_clicked()
     if(waypoint_time > quad_waypoint.matrix[quad_waypoint.l-1][4]){
         quadrotor.set_waypoints(waypoint);
     }else{
-        cout << "Invalid waypoint" << endl << endl;
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Warning");
+        msgBox.setText("Invalid Time Waypoint        ");
+        msgBox.exec();
     }
 }
 
@@ -181,5 +184,5 @@ void mainwindow::init_3dquad()
 
     modifier = new scenemodifier(rootEntity);
     modifier->set_params(quadrotor.get_params());
-    view->setRootEntity(rootEntity);
+    view->setRootEntity(rootEntity);   
 }
