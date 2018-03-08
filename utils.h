@@ -6,6 +6,8 @@
 #include <utility>
 #include <vector>
 #include "C:\Qt\Eigen\Eigen/Dense"
+#include "math.h"
+#include "iostream"
 
 using namespace Eigen;
 

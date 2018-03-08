@@ -2,7 +2,10 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include "iostream"
 #include "quad.h"
+#include "utils.h"
+#include "pso.h"
 #include "scenemodifier.h"
 #include "QMessageBox"
 
@@ -38,9 +41,11 @@ private slots:
     void on_change_controller_clicked();
     void on_add_waypoints_clicked();
     void on_reset_way_clicked();
+    void on_optimize_gain_clicked();
 
 private:
     quad quadrotor;
+    pso optimization;
     params quad_params;
     bool quad_isrunning = false;
     Ui::mainwindow *ui;

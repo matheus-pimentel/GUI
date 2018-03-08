@@ -1,8 +1,4 @@
 #include "controller.h"
-#include "utils.h"
-#include "math.h"
-#include "iostream"
-#include "time.h"
 
 using namespace std;
 
@@ -30,11 +26,6 @@ controller::controller()
     gt_gain.kp_thrust = 20;
     gt_gain.kd_thrust = 0.1;
     gt_gain.kp_moment = 2;
-    gt_gain.kd_moment = 0.01;
-
-    gt_gain.kp_thrust = 20;
-    gt_gain.kd_thrust = 0.01;
-    gt_gain.kp_moment = 20;
     gt_gain.kd_moment = 0.01;
 
     srand(time(NULL));
@@ -401,7 +392,7 @@ matrixds controller::next_state(double dt, matrixds state)
 void controller::set_waypoints(matrixds points)
 {
     waypoints = points;
-    cout << mds2mxd(waypoints) << endl;
+//    cout << mds2mxd(waypoints) << endl;
 }
 
 void controller::set_params(double mass1, double dt1, double gravity1, double Ixx, double Iyy, double Izz, double b1, double k1, double l1)

@@ -1,9 +1,5 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "iostream"
-#include "quad.h"
-#include "utils.h"
-#include "scenemodifier.h"
 
 using namespace std;
 
@@ -155,6 +151,13 @@ void mainwindow::on_add_waypoints_clicked()
         msgBox.setText("Invalid Time Waypoint        ");
         msgBox.exec();
     }
+}
+
+void mainwindow::on_optimize_gain_clicked()
+{
+    optimization.set_params(quadrotor.get_params());
+    optimization.set_waypoints(quadrotor.get_waypoints());
+    optimization.fob(20,0.1,2,0.01);
 }
 
 void mainwindow::init_3dquad()

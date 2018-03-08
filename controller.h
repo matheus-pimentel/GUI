@@ -2,6 +2,9 @@
 #define CONTROLLER_H
 
 #include "utils.h"
+#include "math.h"
+#include "iostream"
+#include "time.h"
 
 using namespace std;
 

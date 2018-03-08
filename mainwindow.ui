@@ -43,7 +43,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>160</y>
+      <y>100</y>
       <width>141</width>
       <height>231</height>
      </rect>
@@ -215,7 +215,7 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>400</y>
+      <y>340</y>
       <width>141</width>
       <height>121</height>
      </rect>
@@ -313,9 +313,9 @@
     <property name="geometry">
      <rect>
       <x>10</x>
-      <y>530</y>
+      <y>470</y>
       <width>141</width>
-      <height>91</height>
+      <height>131</height>
      </rect>
     </property>
     <property name="title">
@@ -360,6 +360,24 @@
      </property>
      <property name="text">
       <string>Type</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="optimize_gain">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>90</y>
+       <width>121</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <pointsize>8</pointsize>
+      </font>
+     </property>
+     <property name="text">
+      <string>Optimize Gains</string>
      </property>
     </widget>
    </widget>
