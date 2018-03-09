@@ -71,6 +71,9 @@ void mainwindow::on_reset_quad_clicked()
 void mainwindow::on_reset_way_clicked()
 {
     quadrotor.init_waypoints();
+    quadrotor.init_quad();
+    init_3dquad();
+    ui->lcd_tempo->display(0);
 }
 void mainwindow::on_change_params_clicked()
 {
@@ -145,6 +148,7 @@ void mainwindow::on_add_waypoints_clicked()
     matrixds quad_waypoint = quadrotor.get_waypoints();
     if(waypoint_time > quad_waypoint.matrix[quad_waypoint.l-1][4]){
         quadrotor.set_waypoints(waypoint);
+        modifier->create_spheres(waypoint_x, waypoint_y, waypoint_z);
     }else{
         QMessageBox msgBox;
         msgBox.setWindowTitle("Warning");
@@ -157,7 +161,24 @@ void mainwindow::on_optimize_gain_clicked()
 {
     optimization.set_params(quadrotor.get_params());
     optimization.set_waypoints(quadrotor.get_waypoints());
-    optimization.fob(20,0.1,2,0.01);
+
+    string quad_controller_decision = ui->controller_options->currentText().toUtf8().constData();
+    if (quad_controller_decision == "Linear"){
+        optimization.set_control(1);
+        optimization.fob(10,20,150,50,750,55);
+    }
+    else if (quad_controller_decision == "Thrust Up"){
+        optimization.set_control(2);
+        optimization.fob(0,0,20,0.01,400,0.01);
+    }
+    else if (quad_controller_decision == "Geometric Tracking"){
+        optimization.set_control(3);
+        optimization.fob(0,0,20,0.1,2,0.01);
+    }
+    else{
+        optimization.set_control(3);
+        optimization.fob(0,0,20,0.1,2,0.01);
+    }
 }
 
 void mainwindow::init_3dquad()
@@ -187,5 +208,11 @@ void mainwindow::init_3dquad()
 
     modifier = new scenemodifier(rootEntity);
     modifier->set_params(quadrotor.get_params());
+
+    matrixds waypoints = quadrotor.get_waypoints();
+    for(int i = 1; i < waypoints.l; i++){
+        modifier->create_spheres(waypoints.matrix[i][0], waypoints.matrix[i][1], waypoints.matrix[i][2]);
+    }
+
     view->setRootEntity(rootEntity);   
 }

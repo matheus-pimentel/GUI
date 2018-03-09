@@ -7,10 +7,12 @@ pso::pso()
     controlhandle = new controller;
 }
 
-double pso::fob(double kp_thrust, double kd_thrust, double kp_moment, double kd_moment)
+double pso::fob(double kp_xy, double kd_xy, double kp_z, double kd_z, double kp_moment, double kd_moment)
 {
-    controlhandle->set_gt_gain(kp_thrust, kd_thrust, kp_moment, kd_moment);
-    controlhandle->set_controller(3);
+    controlhandle->set_l_gain(kp_xy, kd_xy, kp_z, kd_z, kp_moment, kd_moment);
+    controlhandle->set_tu_gain(kp_z, kd_z, kp_moment, kd_moment);
+    controlhandle->set_gt_gain(kp_z, kd_z, kp_moment, kd_moment);
+    controlhandle->set_controller(control);
     double erro = 0;
     double t = 0;
     matrixds position = resize_matrix(1,3);
@@ -98,4 +100,9 @@ void pso::set_params(params quad_params)
 {
     this->quad_params = quad_params;
     controlhandle->set_params(quad_params.mass,quad_params.dt,quad_params.gravity,quad_params.Ixx,quad_params.Iyy,quad_params.Izz,quad_params.b,quad_params.k,quad_params.l);
+}
+
+void pso::set_control(int a)
+{
+    control = a;
 }

@@ -159,6 +159,31 @@ void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
     }
 }
 
+void scenemodifier::create_spheres(double x, double y, double z)
+{
+    // Sphere shape data
+    Qt3DExtras::QSphereMesh *sphereMesh = new Qt3DExtras::QSphereMesh();
+    sphereMesh->setRings(20);
+    sphereMesh->setSlices(20);
+    sphereMesh->setRadius(0.015);
+
+    // Sphere mesh transform
+    Qt3DCore::QTransform *sphereTransform = new Qt3DCore::QTransform();
+
+    sphereTransform->setScale(1.0f);
+    sphereTransform->setTranslation(QVector3D(x,y,z));
+
+    Qt3DExtras::QPhongMaterial *sphereMaterial = new Qt3DExtras::QPhongMaterial();
+    sphereMaterial->setDiffuse(QColor("darkred"));
+
+    Qt3DCore::QEntity *m_sphereEntity;
+    // Sphere
+    m_sphereEntity = new Qt3DCore::QEntity(m_rootEntity);
+    m_sphereEntity->addComponent(sphereMesh);
+    m_sphereEntity->addComponent(sphereMaterial);
+    m_sphereEntity->addComponent(sphereTransform);
+}
+
 void scenemodifier::create_trajectories()
 {
     this->createLines(QVector3D(state.matrix[0][0], state.matrix[0][1], state.matrix[0][2]), QVector3D(old_state.matrix[0][0], old_state.matrix[0][1], old_state.matrix[0][2]), 1, true, "");

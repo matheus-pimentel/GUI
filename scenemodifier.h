@@ -36,6 +36,7 @@ public:
     void set_params(params params_q);
     void set_states(matrixds a,matrixds b,matrixds c,matrixds d);
     void create_trajectories();
+    void create_spheres(double x, double y, double z);
     ~scenemodifier();
 private:
     Qt3DCore::QEntity *m_rootEntity;

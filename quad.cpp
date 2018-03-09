@@ -42,7 +42,6 @@ void quad::run()
         motor = controlhandle->update_motors(t,state);
         model();
         emit emit_quadStates(state, old_state, des_state, old_des_state,t);
-        cout << mds2mxd(motor) << endl;
         Sleep(quad_params.dt*1000);
     }
 }

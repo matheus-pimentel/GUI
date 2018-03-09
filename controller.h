@@ -56,6 +56,8 @@ public:
     matrixds next_state(double dt, matrixds state);
     void set_waypoints(matrixds points);
     void set_params(double mass1, double dt1, double gravity1, double Ixx, double Iyy, double Izz, double b1, double k1, double l1);
+    void set_l_gain(double kp_xy, double kd_xy, double kp_z, double kd_z, double kp_moment, double kd_moment);
+    void set_tu_gain(double kp_thrust, double kd_thrust, double kp_moment, double kd_moment);
     void set_gt_gain(double kp_thrust, double kd_thrust, double kp_moment, double kd_moment);
 };
 

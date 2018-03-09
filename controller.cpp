@@ -63,8 +63,8 @@ matrixds controller::trajhandle(double t)
             new_t = t - waypoints.matrix[i-1][4];
             b.matrix = {{waypoints.matrix[i-1][0], waypoints.matrix[i-1][1], waypoints.matrix[i-1][2]},
                         {waypoints.matrix[i][0], waypoints.matrix[i][1], waypoints.matrix[i][2]},
-                        {2*vel_waypoints.matrix[i-1][0],2*vel_waypoints.matrix[i-1][1],2*vel_waypoints.matrix[i-1][2]},
-                        {2*vel_waypoints.matrix[i][0],2*vel_waypoints.matrix[i][1],2*vel_waypoints.matrix[i][2]},
+                        {vel_waypoints.matrix[i-1][0],vel_waypoints.matrix[i-1][1],vel_waypoints.matrix[i-1][2]},
+                        {vel_waypoints.matrix[i][0],vel_waypoints.matrix[i][1],vel_waypoints.matrix[i][2]},
                         {vel_waypoints.matrix[i-1][0],vel_waypoints.matrix[i-1][1],vel_waypoints.matrix[i-1][2]},
                         {vel_waypoints.matrix[i][0],vel_waypoints.matrix[i][1],vel_waypoints.matrix[i][2]},
                         {vel_waypoints.matrix[i-1][0],vel_waypoints.matrix[i-1][1],vel_waypoints.matrix[i-1][2]},
@@ -406,6 +406,24 @@ void controller::set_params(double mass1, double dt1, double gravity1, double Ix
     b = b1;
     k = k1;
     l = l1;
+}
+
+void controller::set_l_gain(double kp_xy, double kd_xy, double kp_z, double kd_z, double kp_moment, double kd_moment)
+{
+    l_gain.kp_xy = kp_xy;
+    l_gain.kd_xy = kd_xy;
+    l_gain.kp_z = kp_z;
+    l_gain.kd_z = kd_z;
+    l_gain.kp_moment = kp_moment;
+    l_gain.kd_moment = kd_moment;
+}
+
+void controller::set_tu_gain(double kp_thrust, double kd_thrust, double kp_moment, double kd_moment)
+{
+    tu_gain.kp_thrust = kp_thrust;
+    tu_gain.kd_thrust = kd_thrust;
+    tu_gain.kp_moment = kp_moment;
+    tu_gain.kd_moment = kd_moment;
 }
 
 void controller::set_gt_gain(double kp_thrust, double kd_thrust, double kp_moment, double kd_moment)
