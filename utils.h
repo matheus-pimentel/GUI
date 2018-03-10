@@ -9,6 +9,7 @@
 #include "math.h"
 #include "iostream"
 #include "fstream"
+#include "QMessageBox"
 
 using namespace Eigen;
 using namespace std;
@@ -37,5 +38,6 @@ matrixds resize_matrix(int l, int c);
 matrixds mxd2mds(MatrixXd matrix);
 MatrixXd mds2mxd(matrixds matrix);
 matrixds read_points(string fname);
+void write_points(string fname, matrixds matrix);
 
 #endif // UTILS_H

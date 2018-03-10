@@ -210,7 +210,10 @@ matrixds read_points(string fname)
 {
     fstream input(fname,ios_base::in);
     if(!input){
-        cerr << "error " << endl;
+        QMessageBox msgBox;
+        msgBox.setWindowTitle("Warning");
+        msgBox.setText("The file could not be opened! (Utils)        ");
+        msgBox.exec();
     }
 
     matrixds aux = resize_matrix(10,1);
@@ -221,4 +224,17 @@ matrixds read_points(string fname)
     }
 
     return aux;
+}
+
+void write_points(string fname, matrixds matrix)
+{
+    ofstream output;
+    output.open(fname);
+    for(int i = 0; i < matrix.l; i++){
+        for(int j = 0; j < matrix.c; j++){
+            output << matrix.matrix[i][j] << " ";
+        }
+        output << endl;
+    }
+    output.close();
 }
