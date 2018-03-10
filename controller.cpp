@@ -11,22 +11,25 @@ controller::controller()
     motor = resize_matrix(1,4);
     I = resize_matrix(3,3);
 
-    l_gain.kp_xy = 10;
-    l_gain.kd_xy = 20;
-    l_gain.kp_z = 150;
-    l_gain.kd_z = 50;
-    l_gain.kp_moment = 750;
-    l_gain.kd_moment = 55;
+    matrixds l = read_points("Config/l_gain.txt");
+    l_gain.kp_xy = l.matrix[0][0];
+    l_gain.kd_xy = l.matrix[1][0];
+    l_gain.kp_z = l.matrix[2][0];
+    l_gain.kd_z = l.matrix[3][0];
+    l_gain.kp_moment = l.matrix[4][0];
+    l_gain.kd_moment = l.matrix[5][0];
 
-    tu_gain.kp_thrust = 20;
-    tu_gain.kd_thrust = 0.01;
-    tu_gain.kp_moment = 400;
-    tu_gain.kd_moment = 0.01;
+    matrixds tu = read_points("Config/tu_gain.txt");
+    tu_gain.kp_thrust = tu.matrix[0][0];
+    tu_gain.kd_thrust = tu.matrix[1][0];
+    tu_gain.kp_moment = tu.matrix[2][0];
+    tu_gain.kd_moment = tu.matrix[3][0];
 
-    gt_gain.kp_thrust = 20;
-    gt_gain.kd_thrust = 0.1;
-    gt_gain.kp_moment = 2;
-    gt_gain.kd_moment = 0.01;
+    matrixds gt = read_points("Config/gt_gain.txt");
+    gt_gain.kp_thrust = gt.matrix[0][0];
+    gt_gain.kd_thrust = gt.matrix[1][0];
+    gt_gain.kp_moment = gt.matrix[2][0];
+    gt_gain.kd_moment = gt.matrix[3][0];
 
     srand(time(NULL));
 }

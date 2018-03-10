@@ -8,8 +8,10 @@
 #include "C:\Qt\Eigen\Eigen/Dense"
 #include "math.h"
 #include "iostream"
+#include "fstream"
 
 using namespace Eigen;
+using namespace std;
 
 typedef std::vector<std::vector<double>> matrixd;
 
@@ -34,5 +36,6 @@ matrixds column_matrix(matrixds matrix, int a);
 matrixds resize_matrix(int l, int c);
 matrixds mxd2mds(MatrixXd matrix);
 MatrixXd mds2mxd(matrixds matrix);
+matrixds read_points(string fname);
 
 #endif // UTILS_H

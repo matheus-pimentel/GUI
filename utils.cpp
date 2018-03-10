@@ -205,3 +205,20 @@ MatrixXd mds2mxd(matrixds matrix)
     }
     return result;
 }
+
+matrixds read_points(string fname)
+{
+    fstream input(fname,ios_base::in);
+    if(!input){
+        cerr << "error " << endl;
+    }
+
+    matrixds aux = resize_matrix(10,1);
+    aux.l = 0;
+    aux.c = 1;
+    while (input >> aux.matrix[aux.l][0]){
+        aux.l++;
+    }
+
+    return aux;
+}

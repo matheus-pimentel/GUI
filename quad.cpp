@@ -70,6 +70,7 @@ void quad::init_waypoints()
 {
     waypoints = resize_matrix(100,5);
     waypoints.l = 1;
+    controlhandle->set_waypoints(waypoints);
 }
 
 void quad::init_params()

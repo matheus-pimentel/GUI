@@ -31,7 +31,6 @@ mainwindow::mainwindow(QWidget *parent) :
 
     ui->vlayout->setAlignment(Qt::AlignJustify);
     ui->hlayout->addWidget(container,1);
-    ui->hlayout->addLayout(ui->vlayout);
     init_3dquad();
 
     connect(&quadrotor, SIGNAL(emit_quadStates(matrixds,matrixds,matrixds,matrixds,double)), this, SLOT(update_quadStates(matrixds,matrixds,matrixds,matrixds,double)), Qt::QueuedConnection);
