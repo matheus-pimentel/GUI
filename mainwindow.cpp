@@ -160,24 +160,20 @@ void mainwindow::on_optimize_gain_clicked()
 {
     optimization.set_params(quadrotor.get_params());
     optimization.set_waypoints(quadrotor.get_waypoints());
-
     string quad_controller_decision = ui->controller_options->currentText().toUtf8().constData();
     if (quad_controller_decision == "Linear"){
         optimization.set_control(1);
-        optimization.fob(10,20,150,50,750,55);
     }
     else if (quad_controller_decision == "Thrust Up"){
         optimization.set_control(2);
-        optimization.fob(0,0,20,0.01,400,0.01);
     }
     else if (quad_controller_decision == "Geometric Tracking"){
         optimization.set_control(3);
-        optimization.fob(0,0,20,0.1,2,0.01);
     }
     else{
         optimization.set_control(3);
-        optimization.fob(0,0,20,0.1,2,0.01);
     }
+    optimization.optimize();
 }
 
 void mainwindow::init_3dquad()

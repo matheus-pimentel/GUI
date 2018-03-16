@@ -142,7 +142,7 @@ matrixds controller::update_motors(double t, matrixds state)
                 signal = 1;
             else
                 signal = -1;
-            mag = 0.01;
+            mag = 0.02;
             measured_state.matrix[i][j] = state.matrix[i][j] + signal*mag*(double)rand()/RAND_MAX;
         }
     }
@@ -156,14 +156,14 @@ matrixds controller::update_motors(double t, matrixds state)
     else{
         geometric_tracking(t,measured_state);
     }
-        for(int i = 0; i < 4; i++){
-            if(motor.matrix[0][i] > 2250000){
-                motor.matrix[0][i] = 2250000;
-            }else if (motor.matrix[0][i] < -2250000){
-                motor.matrix[0][i] = -2250000;
-            }
-            else{}
+    for(int i = 0; i < 4; i++){
+        if(motor.matrix[0][i] > 2250000){
+            motor.matrix[0][i] = 2250000;
+        }else if (motor.matrix[0][i] < -2250000){
+            motor.matrix[0][i] = -2250000;
         }
+        else{}
+    }
     return motor;
 }
 

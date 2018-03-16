@@ -5,14 +5,30 @@ pso::pso()
     waypoints = resize_matrix(100,5);
     waypoints.l = 1;
     controlhandle = new controller;
+    n = 50;
+    alpha = 0.1;
+    beta = 0.001;
+    ksi = 1;
+    t_max = 10;
+    srand(time(NULL));
 }
 
-double pso::fob(double kp_xy, double kd_xy, double kp_z, double kd_z, double kp_moment, double kd_moment)
+double pso::fob(matrixds gains)
 {
-    controlhandle->set_l_gain(kp_xy, kd_xy, kp_z, kd_z, kp_moment, kd_moment);
-    controlhandle->set_tu_gain(kp_z, kd_z, kp_moment, kd_moment);
-    controlhandle->set_gt_gain(kp_z, kd_z, kp_moment, kd_moment);
     controlhandle->set_controller(control);
+    if(control == 1){
+        controlhandle->set_l_gain(gains.matrix[0][0], gains.matrix[0][1], gains.matrix[0][2], gains.matrix[0][3], gains.matrix[0][4], gains.matrix[0][5]);
+    }
+    else if(control == 2){
+        controlhandle->set_tu_gain(gains.matrix[0][0], gains.matrix[0][1], gains.matrix[0][2], gains.matrix[0][3]);
+    }
+    else if(control == 3){
+        controlhandle->set_gt_gain(gains.matrix[0][0], gains.matrix[0][1], gains.matrix[0][2], gains.matrix[0][3]);
+    }
+    else{
+        controlhandle->set_gt_gain(gains.matrix[0][0], gains.matrix[0][1], gains.matrix[0][2], gains.matrix[0][3]);
+    }
+
     double erro = 0;
     double t = 0;
     matrixds position = resize_matrix(1,3);
@@ -28,7 +44,8 @@ double pso::fob(double kp_xy, double kd_xy, double kp_z, double kd_z, double kp_
     matrixds des_state = resize_matrix(5,3);
     matrixds motor = resize_matrix(1,4);
 
-    for(int i = 0; i < 500; i++){
+    int vmax = (waypoints.matrix[waypoints.l-1][4]/quad_params.dt) + 10;
+    for(int i = 0; i < vmax; i++){
         des_state = controlhandle->trajhandle(t);
         motor = controlhandle->update_motors(t,state);
 
@@ -85,9 +102,87 @@ double pso::fob(double kp_xy, double kd_xy, double kp_z, double kd_z, double kp_
 
         t = t + quad_params.dt;
         erro = erro + pow((state.matrix[0][0]-des_state.matrix[0][0]),2) + pow((state.matrix[0][1]-des_state.matrix[0][1]),2) + pow((state.matrix[0][2]-des_state.matrix[0][2]),2) + pow((state.matrix[2][2]-des_state.matrix[3][0]),2);
-        cout << "erro " << erro << endl;
     }
     return erro;
+}
+
+void pso::optimize()
+{
+    int t = 0;
+    set_range_gains();
+    MatrixXd pos;
+    pos.resize(n,gains_min.cols());
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < gains_min.cols(); j++){
+            pos(i,j) = (gains_max(0,j)-gains_min(0,j))*(double)rand()/RAND_MAX + gains_min(0,j);
+        }
+    }
+    MatrixXd vels;
+    vels = MatrixXd::Zero(n,gains_min.cols());
+
+    MatrixXd fitness;
+    fitness.resize(n,1);
+    for(int i = 0; i < n; i++){
+        fitness(i,0) = fob(mxd2mds(pos.row(i)));
+        cout << "amostra " << i+1 << " erro " << fitness(i,0) << endl;
+    }
+
+    MatrixXd pos_star;
+    pos_star.resize(n,gains_min.cols());
+    pos_star = pos;
+    MatrixXd fitness_star;
+    fitness_star.resize(n,1);
+    fitness_star = fitness;
+
+    double best_fitness = fitness_star.minCoeff();
+
+    MatrixXd best_pos;
+    best_pos.resize(1,gains_min.cols());
+    for(int i = 0; i < n; i++){
+        if(fitness_star(i,0) == best_fitness){
+            best_pos = pos_star.row(i);
+        }
+    }
+
+    while(best_fitness > ksi && t < t_max){
+        t++;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < gains_min.cols(); j++){
+                vels(i,j) = vels(i,j) + alpha*(best_pos(0,j) - pos(i,j))*(double)rand()/RAND_MAX + beta*(pos_star(i,j) - pos(i,j))*(double)rand()/RAND_MAX;
+            }
+        }
+        pos = pos + vels;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < gains_min.cols(); j++){
+                if(pos(i,j) < gains_min(0,j)){
+                    pos(i,j) = gains_min(0,j);
+                }
+                if(pos(i,j) > gains_max(0,j)){
+                    pos(i,j) = gains_max(0,j);
+                }
+            }
+        }
+        for(int i = 0; i < n; i++){
+            fitness(i,0) = fob(mxd2mds(pos.row(i)));
+            cout << "amostra " << i+1 << " erro " << fitness(i,0) << endl;
+        }
+        for(int i = 0; i < n; i++){
+            if(fitness(i,0) < fitness_star(i,0)){
+                fitness_star(i,0) = fitness(i,0);
+                pos_star.row(i) = pos.row(i);
+            }
+        }
+        best_fitness = fitness_star.minCoeff();
+
+        for(int i = 0; i < n; i++){
+            if(fitness_star(i,0) == best_fitness){
+                best_pos = pos_star.row(i);
+            }
+        }
+        cout << "t " << t << endl;
+        cout << "erro " << best_fitness << endl;
+        cout << "pos " << best_pos.transpose() << endl;
+    }
 }
 
 void pso::set_waypoints(matrixds waypoints)
@@ -105,4 +200,32 @@ void pso::set_params(params quad_params)
 void pso::set_control(int a)
 {
     control = a;
+}
+
+void pso::set_range_gains()
+{
+    if(control == 1){
+        gains_min.resize(1,6);
+        gains_min << 0,0,0,0,0,0;
+        gains_max.resize(1,6);
+        gains_max << 50,50,200,200,1000,100;
+    }
+    else if(control == 2){
+        gains_min.resize(1,4);
+        gains_min << 0,0,0,0;
+        gains_max.resize(1,4);
+        gains_max << 100,1,1000,1;
+    }
+    else if(control == 3){
+        gains_min.resize(1,4);
+        gains_min << 0,0,0,0;
+        gains_max.resize(1,4);
+        gains_max << 50,10,50,1;
+    }
+    else{
+        gains_min.resize(1,4);
+        gains_min << 0,0,0,0;
+        gains_max.resize(1,4);
+        gains_max << 50,10,50,1;
+    }
 }
