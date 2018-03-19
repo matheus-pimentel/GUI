@@ -2,6 +2,7 @@
 #define MAINWINDOW_H
 
 #include <QMainWindow>
+#include <QVector>
 #include "iostream"
 #include "quad.h"
 #include "utils.h"
@@ -22,12 +23,15 @@ namespace Ui {
 class mainwindow;
 }
 
+class QCustomPlot;
+class plot;
+
 class mainwindow : public QMainWindow
 {
     Q_OBJECT
 
 public:
-    explicit mainwindow(QWidget *parent = 0);
+    explicit mainwindow(QWidget *parent = nullptr);
     void init_3dquad();
     ~mainwindow();
 
@@ -53,6 +57,8 @@ private:
     Qt3DCore::QEntity *rootEntity;
     Qt3DExtras::Qt3DWindow *view;
     Qt3DRender::QCamera *cameraEntity;
+    QCustomPlot *mPlot;
+    plot *posx;
 };
 
 #endif // MAINWINDOW_H

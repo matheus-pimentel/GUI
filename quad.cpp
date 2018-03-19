@@ -25,8 +25,8 @@ quad::quad()
 
     waypoints.l = 3;
     waypoints.matrix = {{0,0,0,0,0},
-                        {2,-1,1,3.14,1.5},
-                        {-1,2,2,3.14,3}};
+                        {2,-1,1,3.14,1},
+                        {-1,2,2,3.14,2}};
 
 //    waypoints.l = 2;
 //    waypoints.matrix = {{0,0,0,0,0},
@@ -44,7 +44,7 @@ void quad::run()
         motor = controlhandle->update_motors(t,state);
         model();
         emit emit_quadStates(state, old_state, des_state, old_des_state,t);
-        Sleep(quad_params.dt*100);
+        Sleep(quad_params.dt*1000);
     }
 }
 

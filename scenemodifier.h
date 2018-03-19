@@ -56,6 +56,8 @@ private:
     matrixds old_des_state;
     MatrixXd a1,a2,a3;
     MatrixXd b1,b2,b3;
+
+    bool dash_line = true;
 public slots:
     void createLines(const QVector3D &v0, const QVector3D &v1,
                          const unsigned int index, const bool axis, const QString &lod_param);

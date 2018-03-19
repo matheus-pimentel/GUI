@@ -127,9 +127,6 @@ void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
     line_mesh->setIndexOffset(0);
     line_mesh->setFirstInstance(0);
     line_mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Lines);
-    if(index == 4){
-        line_mesh->setPrimitiveType(Qt3DRender::QGeometryRenderer::Points);
-    }
     line_mesh->setGeometry(geometry);
     line_mesh->setVertexCount(2);
 
@@ -148,7 +145,7 @@ void scenemodifier::createLines(const QVector3D &v0, const QVector3D &v1,
     }
     else if(index == 4){
         Qt3DExtras::QPhongMaterial *lineMaterial = new Qt3DExtras::QPhongMaterial();
-        lineMaterial->setAmbient(QColor("Black"));
+        lineMaterial->setAmbient(QColor("Blue"));
         m_lineEntity->addComponent(lineMaterial);
     }
 
@@ -174,7 +171,7 @@ void scenemodifier::create_spheres(double x, double y, double z)
     sphereTransform->setTranslation(QVector3D(x,y,z));
 
     Qt3DExtras::QPhongMaterial *sphereMaterial = new Qt3DExtras::QPhongMaterial();
-    sphereMaterial->setDiffuse(QColor("darkred"));
+    sphereMaterial->setDiffuse(QColor("Blue"));
 
     Qt3DCore::QEntity *m_sphereEntity;
     // Sphere
@@ -187,7 +184,14 @@ void scenemodifier::create_spheres(double x, double y, double z)
 void scenemodifier::create_trajectories()
 {
     this->createLines(QVector3D(state.matrix[0][0], state.matrix[0][1], state.matrix[0][2]), QVector3D(old_state.matrix[0][0], old_state.matrix[0][1], old_state.matrix[0][2]), 1, true, "");
-    this->createLines(QVector3D(des_state.matrix[0][0], des_state.matrix[0][1], des_state.matrix[0][2]), QVector3D(old_des_state.matrix[0][0], old_des_state.matrix[0][1], old_des_state.matrix[0][2]), 4, true, "");
+    if(dash_line){
+        this->createLines(QVector3D(des_state.matrix[0][0], des_state.matrix[0][1], des_state.matrix[0][2]), QVector3D(old_des_state.matrix[0][0], old_des_state.matrix[0][1], old_des_state.matrix[0][2]), 4, true, "");
+        dash_line = false;
+    }
+    else{
+        dash_line = true;
+    }
+
 }
 
 void scenemodifier::set_params(params params_q)

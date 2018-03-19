@@ -1,5 +1,7 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
+#include "qcustomplot.h"
+#include "plot.h"
 
 using namespace std;
 
@@ -10,6 +12,16 @@ mainwindow::mainwindow(QWidget *parent) :
     qRegisterMetaType<matrixds>("matrixds");
     ui->setupUi(this);
     setWindowTitle("GUI");
+
+    mPlot = new QCustomPlot();
+    ui->layout_x->addWidget(mPlot);
+    ui->layout_x->setMargin(0);
+
+    mPlot->xAxis->setRange(0,3.0);
+    mPlot->yAxis->setRange(-3.0,3.0);
+
+    posx = new plot(mPlot);
+    posx->set_des_state();
 
     ui->params_options->addItem("Mass");
     ui->params_options->addItem("L");
@@ -44,6 +56,16 @@ void mainwindow::update_quadStates(matrixds state, matrixds old_state, matrixds 
 {
     modifier->set_states(state, old_state, des_state, old_des_state);
     modifier->update_plot();
+
+    posx->set_x(t);
+    posx->set_y(des_state.matrix[0][0]);
+    posx->draw_graph();
+    if(t>3){
+        mPlot->xAxis->setRange(0,t);
+    }
+    mPlot->replot();
+    ui->layout_x->update();
+
     ui->lcd_tempo->display(t);
 }
 void mainwindow::on_start_quad_clicked()
