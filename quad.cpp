@@ -44,7 +44,7 @@ void quad::run()
         motor = controlhandle->update_motors(t,state);
         model();
         emit emit_quadStates(state, old_state, des_state, old_des_state,t);
-        Sleep(quad_params.dt*1000);
+        msleep(quad_params.dt*1000);
     }
 }
 

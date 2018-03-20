@@ -11,7 +11,7 @@ controller::controller()
     motor = resize_matrix(1,4);
     I = resize_matrix(3,3);
 
-    matrixds l = read_points("Config/l_gain.txt");
+    matrixds l = read_points("Config/l_gain");
     l_gain.kp_xy = l.matrix[0][0];
     l_gain.kd_xy = l.matrix[1][0];
     l_gain.kp_z = l.matrix[2][0];
@@ -19,13 +19,13 @@ controller::controller()
     l_gain.kp_moment = l.matrix[4][0];
     l_gain.kd_moment = l.matrix[5][0];
 
-    matrixds tu = read_points("Config/tu_gain.txt");
+    matrixds tu = read_points("Config/tu_gain");
     tu_gain.kp_thrust = tu.matrix[0][0];
     tu_gain.kd_thrust = tu.matrix[1][0];
     tu_gain.kp_moment = tu.matrix[2][0];
     tu_gain.kd_moment = tu.matrix[3][0];
 
-    matrixds gt = read_points("Config/gt_gain.txt");
+    matrixds gt = read_points("Config/gt_gain");
     gt_gain.kp_thrust = gt.matrix[0][0];
     gt_gain.kd_thrust = gt.matrix[1][0];
     gt_gain.kp_moment = gt.matrix[2][0];

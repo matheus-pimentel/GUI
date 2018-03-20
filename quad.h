@@ -3,7 +3,6 @@
 
 #include "utils.h"
 #include "controller.h"
-#include "windows.h"
 #include "iostream"
 #include "math.h"
 #include <QThread>

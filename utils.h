@@ -5,7 +5,7 @@
 
 #include <utility>
 #include <vector>
-#include "C:\Qt\Eigen\Eigen/Dense"
+#include "eigen3/Eigen/Dense"
 #include "math.h"
 #include "iostream"
 #include "fstream"

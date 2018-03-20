@@ -33,6 +33,9 @@ class mainwindow : public QMainWindow
 public:
     explicit mainwindow(QWidget *parent = nullptr);
     void init_3dquad();
+    void init_2dplot();
+    void update_2dplot(matrixds state, matrixds des_state, double t);
+    void clear_2dplot();
     ~mainwindow();
 
 public slots:
@@ -57,8 +60,13 @@ private:
     Qt3DCore::QEntity *rootEntity;
     Qt3DExtras::Qt3DWindow *view;
     Qt3DRender::QCamera *cameraEntity;
+
     QCustomPlot *mPlot;
     plot *posx;
+
+    QCustomPlot *m_plotx, *m_ploty, *m_plotz, *m_plotroll, *m_plotpitch, *m_plotyaw;
+    plot *state_x, *state_y, *state_z, *state_roll, *state_pitch, *state_yaw;
+    plot *des_state_x, *des_state_y, *des_state_z, *des_state_roll, *des_state_pitch, *des_state_yaw;
 };
 
 #endif // MAINWINDOW_H

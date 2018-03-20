@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1257</width>
-    <height>654</height>
+    <width>1275</width>
+    <height>662</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -18,9 +18,9 @@
     <property name="geometry">
      <rect>
       <x>160</x>
-      <y>50</y>
+      <y>10</y>
       <width>871</width>
-      <height>611</height>
+      <height>651</height>
      </rect>
     </property>
     <layout class="QHBoxLayout" name="hlayout">
@@ -381,37 +381,71 @@
      </property>
     </widget>
    </widget>
-   <widget class="QLabel" name="label_warnings">
-    <property name="geometry">
-     <rect>
-      <x>160</x>
-      <y>20</y>
-      <width>871</width>
-      <height>31</height>
-     </rect>
-    </property>
-    <property name="font">
-     <font>
-      <pointsize>16</pointsize>
-     </font>
-    </property>
-    <property name="text">
-     <string/>
-    </property>
-    <property name="alignment">
-     <set>Qt::AlignCenter</set>
-    </property>
-   </widget>
    <widget class="QWidget" name="verticalLayoutWidget">
     <property name="geometry">
      <rect>
       <x>1040</x>
-      <y>50</y>
-      <width>211</width>
-      <height>121</height>
+      <y>10</y>
+      <width>221</width>
+      <height>101</height>
      </rect>
     </property>
     <layout class="QVBoxLayout" name="layout_x"/>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_2">
+    <property name="geometry">
+     <rect>
+      <x>1040</x>
+      <y>120</y>
+      <width>221</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="layout_y"/>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_3">
+    <property name="geometry">
+     <rect>
+      <x>1040</x>
+      <y>230</y>
+      <width>221</width>
+      <height>101</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="layout_z"/>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_7">
+    <property name="geometry">
+     <rect>
+      <x>1040</x>
+      <y>340</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="layout_roll"/>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_8">
+    <property name="geometry">
+     <rect>
+      <x>1040</x>
+      <y>440</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="layout_pitch"/>
+   </widget>
+   <widget class="QWidget" name="verticalLayoutWidget_9">
+    <property name="geometry">
+     <rect>
+      <x>1040</x>
+      <y>540</y>
+      <width>221</width>
+      <height>91</height>
+     </rect>
+    </property>
+    <layout class="QVBoxLayout" name="layout_yaw"/>
    </widget>
   </widget>
   <widget class="QMenuBar" name="menuBar">
@@ -419,8 +453,8 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1257</width>
-     <height>21</height>
+     <width>1275</width>
+     <height>22</height>
     </rect>
    </property>
   </widget>
