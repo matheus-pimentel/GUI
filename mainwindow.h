@@ -3,6 +3,8 @@
 
 #include <QMainWindow>
 #include <QVector>
+#include <stdlib.h>
+#include <QLocale>
 #include "iostream"
 #include "quad.h"
 #include "utils.h"

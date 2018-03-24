@@ -113,6 +113,7 @@ void mainwindow::on_change_params_clicked()
     {
     }
     quadrotor.set_params(num_params,value);
+    optimization.set_params(quadrotor.get_params());
     quadrotor.init_quad();
     init_3dquad();
     clear_2dplot();
@@ -156,6 +157,27 @@ void mainwindow::on_add_waypoints_clicked()
     if(waypoint_time > quad_waypoint.matrix[quad_waypoint.l-1][4]){
         quadrotor.set_waypoints(waypoint);
         modifier->create_spheres(waypoint_x, waypoint_y, waypoint_z);
+
+        m_plotx->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+        m_ploty->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+        m_plotz->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+        m_plotroll->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+        m_plotpitch->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+        m_plotyaw->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+
+        m_plotx->replot();
+        m_ploty->replot();
+        m_plotz->replot();
+        m_plotroll->replot();
+        m_plotpitch->replot();
+        m_plotyaw->replot();
+
+        ui->layout_x->update();
+        ui->layout_y->update();
+        ui->layout_z->update();
+        ui->layout_roll->update();
+        ui->layout_pitch->update();
+        ui->layout_yaw->update();
     }else{
         QMessageBox msgBox;
         msgBox.setWindowTitle("Warning");
@@ -242,12 +264,13 @@ void mainwindow::init_2dplot(){
     ui->layout_pitch->setMargin(0);
     ui->layout_yaw->setMargin(0);
 
-    m_plotx->xAxis->setRange(0,3.0);
-    m_ploty->xAxis->setRange(0,3.0);
-    m_plotz->xAxis->setRange(0,3.0);
-    m_plotroll->xAxis->setRange(0,3.0);
-    m_plotpitch->xAxis->setRange(0,3.0);
-    m_plotyaw->xAxis->setRange(0,3.0);
+    m_plotx->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+    m_ploty->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+    m_plotz->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+    m_plotroll->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+    m_plotpitch->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+    m_plotyaw->xAxis->setRange(0,quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3);
+    m_plotyaw->xAxis->setLabel("Time");
 
     m_plotx->yAxis->setRange(-3.0,3.0);
     m_ploty->yAxis->setRange(-3.0,3.0);
@@ -255,6 +278,13 @@ void mainwindow::init_2dplot(){
     m_plotroll->yAxis->setRange(-90,90);
     m_plotpitch->yAxis->setRange(-90,90);
     m_plotyaw->yAxis->setRange(-180,180);
+
+    m_plotx->yAxis->setLabel("X");
+    m_ploty->yAxis->setLabel("Y");
+    m_plotz->yAxis->setLabel("Z");
+    m_plotroll->yAxis->setLabel("Roll");
+    m_plotpitch->yAxis->setLabel("Pitch");
+    m_plotyaw->yAxis->setLabel("Yaw");
 
     state_x = new plot(m_plotx);
     des_state_x = new plot(m_plotx);
@@ -290,67 +320,61 @@ void mainwindow::init_2dplot(){
 }
 
 void mainwindow::update_2dplot(matrixds state, matrixds des_state, double t){
-    state_x->set_x(t);
-    state_y->set_x(t);
-    state_z->set_x(t);
-    state_roll->set_x(t);
-    state_pitch->set_x(t);
-    state_yaw->set_x(t);
-    des_state_x->set_x(t);
-    des_state_y->set_x(t);
-    des_state_z->set_x(t);
-    des_state_roll->set_x(t);
-    des_state_pitch->set_x(t);
-    des_state_yaw->set_x(t);
+    if(t < quadrotor.get_waypoints().matrix[quadrotor.get_waypoints().l - 1][4]*1.3){
+        state_x->set_x(t);
+        state_y->set_x(t);
+        state_z->set_x(t);
+        state_roll->set_x(t);
+        state_pitch->set_x(t);
+        state_yaw->set_x(t);
+        des_state_x->set_x(t);
+        des_state_y->set_x(t);
+        des_state_z->set_x(t);
+        des_state_roll->set_x(t);
+        des_state_pitch->set_x(t);
+        des_state_yaw->set_x(t);
 
-    state_x->set_y(state.matrix[0][0]);
-    state_y->set_y(state.matrix[0][1]);
-    state_z->set_y(state.matrix[0][2]);
-    state_roll->set_y(state.matrix[2][0]);
-    state_pitch->set_y(state.matrix[2][1]);
-    state_yaw->set_y(state.matrix[2][2]);
-    des_state_x->set_y(des_state.matrix[0][0]);
-    des_state_y->set_y(des_state.matrix[0][1]);
-    des_state_z->set_y(des_state.matrix[0][2]);
-    des_state_roll->set_y(0);
-    des_state_pitch->set_y(0);
-    des_state_yaw->set_y(des_state.matrix[3][0]);
+        state_x->set_y(state.matrix[0][0]);
+        state_y->set_y(state.matrix[0][1]);
+        state_z->set_y(state.matrix[0][2]);
+        state_roll->set_y(state.matrix[2][0]*180/PI);
+        state_pitch->set_y(state.matrix[2][1]*180/PI);
+        state_yaw->set_y(state.matrix[2][2]*180/PI);
+        des_state_x->set_y(des_state.matrix[0][0]);
+        des_state_y->set_y(des_state.matrix[0][1]);
+        des_state_z->set_y(des_state.matrix[0][2]);
+        des_state_roll->set_y(des_state.matrix[3][0]*180/PI);
+        des_state_pitch->set_y(des_state.matrix[3][1]*180/PI);
+        des_state_yaw->set_y(des_state.matrix[3][2]*180/PI);
 
-    state_x->draw_graph();
-    state_y->draw_graph();
-    state_z->draw_graph();
-    state_roll->draw_graph();
-    state_pitch->draw_graph();
-    state_yaw->draw_graph();
+        state_x->draw_graph();
+        state_y->draw_graph();
+        state_z->draw_graph();
+        state_roll->draw_graph();
+        state_pitch->draw_graph();
+        state_yaw->draw_graph();
 
-    des_state_x->draw_graph();
-    des_state_y->draw_graph();
-    des_state_z->draw_graph();
-    des_state_roll->draw_graph();
-    des_state_pitch->draw_graph();
-    des_state_yaw->draw_graph();
+        des_state_x->draw_graph();
+        des_state_y->draw_graph();
+        des_state_z->draw_graph();
+        des_state_roll->draw_graph();
+        des_state_pitch->draw_graph();
+        des_state_yaw->draw_graph();
 
-    if(t>3){
-        m_plotx->xAxis->setRange(0,t);
-        m_ploty->xAxis->setRange(0,t);
-        m_plotz->xAxis->setRange(0,t);
-        m_plotroll->xAxis->setRange(0,t);
-        m_plotpitch->xAxis->setRange(0,t);
-        m_plotyaw->xAxis->setRange(0,t);
+        m_plotx->replot();
+        m_ploty->replot();
+        m_plotz->replot();
+        m_plotroll->replot();
+        m_plotpitch->replot();
+        m_plotyaw->replot();
+
+        ui->layout_x->update();
+        ui->layout_y->update();
+        ui->layout_z->update();
+        ui->layout_roll->update();
+        ui->layout_pitch->update();
+        ui->layout_yaw->update();
     }
-    m_plotx->replot();
-    m_ploty->replot();
-    m_plotz->replot();
-    m_plotroll->replot();
-    m_plotpitch->replot();
-    m_plotyaw->replot();
-
-    ui->layout_x->update();
-    ui->layout_y->update();
-    ui->layout_z->update();
-    ui->layout_roll->update();
-    ui->layout_pitch->update();
-    ui->layout_yaw->update();
 }
 
 void mainwindow::clear_2dplot(){
@@ -381,20 +405,6 @@ void mainwindow::clear_2dplot(){
     des_state_roll->draw_graph();
     des_state_pitch->draw_graph();
     des_state_yaw->draw_graph();
-
-    m_plotx->xAxis->setRange(0,3.0);
-    m_ploty->xAxis->setRange(0,3.0);
-    m_plotz->xAxis->setRange(0,3.0);
-    m_plotroll->xAxis->setRange(0,3.0);
-    m_plotpitch->xAxis->setRange(0,3.0);
-    m_plotyaw->xAxis->setRange(0,3.0);
-
-    m_plotx->yAxis->setRange(-3.0,3.0);
-    m_ploty->yAxis->setRange(-3.0,3.0);
-    m_plotz->yAxis->setRange(0,3.0);
-    m_plotroll->yAxis->setRange(-90,90);
-    m_plotpitch->yAxis->setRange(-90,90);
-    m_plotyaw->yAxis->setRange(-90,90);
 
     m_plotx->replot();
     m_ploty->replot();

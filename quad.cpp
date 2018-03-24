@@ -40,7 +40,7 @@ void quad::run()
     while(is_running){
         old_des_state = des_state;
         old_state = state;
-        des_state = controlhandle->trajhandle(t);
+        des_state = controlhandle->get_des_state(t);
         motor = controlhandle->update_motors(t,state);
         model();
         emit emit_quadStates(state, old_state, des_state, old_des_state,t);

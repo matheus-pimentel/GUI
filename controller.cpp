@@ -194,6 +194,8 @@ void controller::linear_controller(double t, matrixds state)
 
     double phides = (r1_ddot*sin(state0(2,2)) - r2_ddot*cos(state0(2,2)))/gravity;
     double thetades = (r1_ddot*cos(state0(2,2)) + r2_ddot*sin(state0(2,2)))/gravity;
+    roll_now = phides;
+    pitch_now = thetades;
 
     double new_phides = (new_r1_ddot*sin(state1(2,2)) - new_r2_ddot*cos(state1(2,2)))/gravity;
     double new_thetades = (new_r1_ddot*cos(state1(2,2)) + new_r2_ddot*sin(state1(2,2)))/gravity;
@@ -245,6 +247,8 @@ void controller::thrust_up_controller(double t, matrixds state)
     des_ang(0,0) = atan((t_vector(0,0)*sin(des_state(3,0)) - t_vector(0,1)*cos(des_state(3,0)))/(t_vector(0,2)));
     des_ang(1,0) = atan2(t_vector(0,0)*cos(des_state(3,0)) + t_vector(0,1)*sin(des_state(3,0)),t_vector(0,2)/cos(des_ang(0,0)));
     des_ang(2,0) = des_state(3,0);
+    roll_now = des_ang(0,0);
+    pitch_now = des_ang(1,0);
 
     des_ang1(0,0) = atan((t_vector1(0,0)*sin(des_state1(3,0)) - t_vector1(0,1)*cos(des_state1(3,0)))/(t_vector1(0,2)));
     des_ang1(1,0) = atan2(t_vector1(0,0)*cos(des_state1(3,0)) + t_vector1(0,1)*sin(des_state1(3,0)),t_vector1(0,2)/cos(des_ang1(0,0)));
@@ -330,6 +334,8 @@ void controller::geometric_tracking(double t, matrixds state)
     des_ang(0,0) = atan((t_vector(0,0)*sin(des_state(3,0)) - t_vector(0,1)*cos(des_state(3,0)))/(t_vector(0,2)));
     des_ang(1,0) = atan2(t_vector(0,0)*cos(des_state(3,0)) + t_vector(0,1)*sin(des_state(3,0)),t_vector(0,2)/cos(des_ang(0,0)));
     des_ang(2,0) = des_state(3,0);
+    roll_now = des_ang(0,0);
+    pitch_now = des_ang(1,0);
 
     des_ang1(0,0) = atan((t_vector1(0,0)*sin(des_state1(3,0)) - t_vector1(0,1)*cos(des_state1(3,0)))/(t_vector1(0,2)));
     des_ang1(1,0) = atan2(t_vector1(0,0)*cos(des_state1(3,0)) + t_vector1(0,1)*sin(des_state1(3,0)),t_vector1(0,2)/cos(des_ang1(0,0)));
@@ -435,5 +441,14 @@ void controller::set_gt_gain(double kp_thrust, double kd_thrust, double kp_momen
     gt_gain.kd_thrust = kd_thrust;
     gt_gain.kp_moment = kp_moment;
     gt_gain.kd_moment = kd_moment;
+}
+
+matrixds controller::get_des_state(double t){
+    matrixds des_state = trajhandle(t);
+    des_state.matrix[3][2] = des_state.matrix[3][0];
+    des_state.matrix[3][0] = roll_now;
+    des_state.matrix[3][1] = pitch_now;
+
+    return des_state;
 }
 
