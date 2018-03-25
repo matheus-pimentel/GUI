@@ -13,6 +13,10 @@ pso::pso()
     srand(time(NULL));
 }
 
+/***************************
+ *  Miscelaneous functions *
+ ***************************/
+
 double pso::fob(matrixds gains)
 {
     controlhandle->set_controller(control);
@@ -205,21 +209,19 @@ void pso::optimize()
     }
 }
 
-void pso::set_waypoints(matrixds waypoints)
+/******************
+ *  Set functions *
+ ******************/
+
+void pso::set_control(int a)
 {
-    this->waypoints = waypoints;
-    controlhandle->set_waypoints(waypoints);
+    control = a;
 }
 
 void pso::set_params(params quad_params)
 {
     this->quad_params = quad_params;
     controlhandle->set_params(quad_params.mass,quad_params.dt,quad_params.gravity,quad_params.Ixx,quad_params.Iyy,quad_params.Izz,quad_params.b,quad_params.k,quad_params.l);
-}
-
-void pso::set_control(int a)
-{
-    control = a;
 }
 
 void pso::set_range_gains()
@@ -248,4 +250,10 @@ void pso::set_range_gains()
         gains_max.resize(1,4);
         gains_max << 50,10,50,1;
     }
+}
+
+void pso::set_waypoints(matrixds waypoints)
+{
+    this->waypoints = waypoints;
+    controlhandle->set_waypoints(waypoints);
 }

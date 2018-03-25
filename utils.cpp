@@ -2,16 +2,16 @@
 
 using namespace std;
 
-void print_matrix(matrixds matrix)
+matrixds inv_transformation_matrix(double roll, double pitch, double yaw)
 {
-    int i = 0, j = 0;
-    for(i = 0; i < matrix.l; i++){
-        for(j = 0; j < matrix.c; j++){
-            cout << matrix.matrix[i][j] << " ";
-        }
-        cout << endl;
-    }
-    cout << endl;
+    matrixds inv;
+    inv.matrix = matrixd(3,vector<double>(3,0.0));
+    inv.l = 3;
+    inv.c = 3;
+    inv.matrix = {{(cos(pitch)), (0), (sin(pitch))},
+                  {(sin(roll)*sin(pitch)/cos(roll)), (1), (-cos(pitch)*sin(roll)/cos(roll))},
+                  {(-sin(pitch)/cos(roll)), (0), (cos(pitch)/cos(roll))}};
+    return inv;
 }
 
 matrixds rotation_matrix(double roll, double pitch, double yaw)
@@ -38,16 +38,69 @@ matrixds transformation_matrix(double roll, double pitch, double yaw)
     return T;
 }
 
-matrixds inv_transformation_matrix(double roll, double pitch, double yaw)
+matrixds inverse_matrix(matrixds matrix)
 {
+    int i = 0, j = 0;
     matrixds inv;
-    inv.matrix = matrixd(3,vector<double>(3,0.0));
-    inv.l = 3;
-    inv.c = 3;
-    inv.matrix = {{(cos(pitch)), (0), (sin(pitch))},
-                  {(sin(roll)*sin(pitch)/cos(roll)), (1), (-cos(pitch)*sin(roll)/cos(roll))},
-                  {(-sin(pitch)/cos(roll)), (0), (cos(pitch)/cos(roll))}};
+    MatrixXd matrix2(matrix.l,matrix.c);
+
+    inv.matrix= matrixd(matrix.l, vector<double>(matrix.c, 0.0));
+    inv.l = matrix.l;
+    inv.c = matrix.c;
+
+    if(matrix.l == matrix.c){
+        for(i = 0; i < matrix.l; i++){
+            for(j = 0; j < matrix.c; j++){
+                matrix2(i,j) = matrix.matrix[i][j];
+            }
+        }
+        FullPivLU<MatrixXd> lu(matrix2);
+        MatrixXd lu2 = lu.inverse();
+
+        for(i = 0; i < matrix.l; i++){
+            for(j = 0; j < matrix.c; j++){
+                inv.matrix[i][j] = lu2(i,j);
+            }
+        }
+    }
     return inv;
+}
+
+matrixds multiple_matrix(double a, matrixds b)
+{
+    int i = 0, j = 0;
+    matrixds multiple;
+    multiple.matrix = matrixd(b.l,vector<double>(b.c,0.0));
+    multiple.l = b.l;
+    multiple.c = b.c;
+    for(i = 0; i < b.l; i++){
+        for(j = 0; j < b.c; j++){
+            multiple.matrix[i][j] = a*b.matrix[i][j];
+        }
+    }
+    return multiple;
+}
+
+matrixds product_matrix(matrixds a, matrixds b)
+{
+    int i = 0, j = 0, k = 0;
+    double sum = 0;
+    matrixds product;
+    product.matrix = matrixd(a.l, vector<double>(b.c, 0.0));
+    if(a.c == b.l){
+        for(i = 0; i < a.l; i++){
+            for(j = 0; j < b.c; j++){
+                for(k = 0; k < b.l; k++){
+                    sum = sum + a.matrix[i][k]*b.matrix[k][j];
+                }
+                product.matrix[i][j] = sum;
+                sum = 0;
+            }
+        }
+    }
+    product.l = a.l;
+    product.c = b.c;
+    return product;
 }
 
 matrixds sum_matrix(matrixds a, matrixds b)
@@ -80,69 +133,17 @@ matrixds transposed_matrix(matrixds a)
     return transposed;
 }
 
-matrixds product_matrix(matrixds a, matrixds b)
+matrixds column_matrix(matrixds matrix, int a)
 {
-    int i = 0, j = 0, k = 0;
-    double sum = 0;
-    matrixds product;
-    product.matrix = matrixd(a.l, vector<double>(b.c, 0.0));
-    if(a.c == b.l){
-        for(i = 0; i < a.l; i++){
-            for(j = 0; j < b.c; j++){
-                for(k = 0; k < b.l; k++){
-                    sum = sum + a.matrix[i][k]*b.matrix[k][j];
-                }
-                product.matrix[i][j] = sum;
-                sum = 0;
-            }
-        }
+    matrixds column;
+    int i = 0;
+    column.matrix = matrixd(matrix.l, vector<double>(1,0.0));
+    column.l = matrix.l;
+    column.c = 1;
+    for(i = 0; i < matrix.l; i++){
+        column.matrix[i][0] = matrix.matrix[i][a];
     }
-    product.l = a.l;
-    product.c = b.c;
-    return product;
-}
-
-matrixds multiple_matrix(double a, matrixds b)
-{
-    int i = 0, j = 0;
-    matrixds multiple;
-    multiple.matrix = matrixd(b.l,vector<double>(b.c,0.0));
-    multiple.l = b.l;
-    multiple.c = b.c;
-    for(i = 0; i < b.l; i++){
-        for(j = 0; j < b.c; j++){
-            multiple.matrix[i][j] = a*b.matrix[i][j];
-        }
-    }
-    return multiple;
-}
-
-matrixds inverse_matrix(matrixds matrix)
-{
-    int i = 0, j = 0;
-    matrixds inv;
-    MatrixXd matrix2(matrix.l,matrix.c);
-
-    inv.matrix= matrixd(matrix.l, vector<double>(matrix.c, 0.0));
-    inv.l = matrix.l;
-    inv.c = matrix.c;
-
-    if(matrix.l == matrix.c){
-        for(i = 0; i < matrix.l; i++){
-            for(j = 0; j < matrix.c; j++){
-                matrix2(i,j) = matrix.matrix[i][j];
-            }
-        }
-        FullPivLU<MatrixXd> lu(matrix2);
-        MatrixXd lu2 = lu.inverse();
-
-        for(i = 0; i < matrix.l; i++){
-            for(j = 0; j < matrix.c; j++){
-                inv.matrix[i][j] = lu2(i,j);
-            }
-        }
-    }
-    return inv;
+    return column;
 }
 
 matrixds line_matrix(matrixds matrix, int a)
@@ -158,19 +159,6 @@ matrixds line_matrix(matrixds matrix, int a)
     return line;
 }
 
-matrixds column_matrix(matrixds matrix, int a)
-{
-    matrixds column;
-    int i = 0;
-    column.matrix = matrixd(matrix.l, vector<double>(1,0.0));
-    column.l = matrix.l;
-    column.c = 1;
-    for(i = 0; i < matrix.l; i++){
-        column.matrix[i][0] = matrix.matrix[i][a];
-    }
-    return column;
-}
-
 matrixds resize_matrix(int l, int c)
 {
     matrixds matrix;
@@ -178,6 +166,19 @@ matrixds resize_matrix(int l, int c)
     matrix.l = l;
     matrix.c = c;
     return matrix;
+}
+
+MatrixXd mds2mxd(matrixds matrix)
+{
+    MatrixXd result(matrix.l,matrix.c);
+    int i = 0, j = 0;
+
+    for(i = 0; i < matrix.l; i++){
+        for(j = 0; j < matrix.c; j++){
+            result(i,j) = matrix.matrix[i][j];
+        }
+    }
+    return result;
 }
 
 matrixds mxd2mds(MatrixXd matrix)
@@ -193,17 +194,16 @@ matrixds mxd2mds(MatrixXd matrix)
     return result;
 }
 
-MatrixXd mds2mxd(matrixds matrix)
+void print_matrix(matrixds matrix)
 {
-    MatrixXd result(matrix.l,matrix.c);
     int i = 0, j = 0;
-
     for(i = 0; i < matrix.l; i++){
         for(j = 0; j < matrix.c; j++){
-            result(i,j) = matrix.matrix[i][j];
+            cout << matrix.matrix[i][j] << " ";
         }
+        cout << endl;
     }
-    return result;
+    cout << endl;
 }
 
 matrixds read_points(string fname)

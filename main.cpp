@@ -1,3 +1,11 @@
+/**
+    @copyright
+
+    @authors Matheus Pires Pimentel
+             Rodrigo Pereira Gonçalves
+    @version 1.0
+*/
+
 #include "mainwindow.h"
 #include <QApplication>
 
