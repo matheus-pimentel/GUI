@@ -188,23 +188,23 @@ void pso::optimize()
         cout << "pos " << best_pos.transpose() << endl;
     }
     if(control == 1){
-        if(best_fitness < fob(transposed_matrix(read_points("Config/l_gain")))){
-            write_points("Config/l_gain",mxd2mds(best_pos.transpose()));
+        if(best_fitness < fob(transposed_matrix(read_points("../Quadrotor-Simulator/Config/l_gain")))){
+            write_points("../Quadrotor-Simulator/Config/l_gain",mxd2mds(best_pos.transpose()));
         }
     }
     else if(control == 2){
-        if(best_fitness < fob(transposed_matrix(read_points("Config/tu_gain")))){
-            write_points("Config/tu_gain",mxd2mds(best_pos.transpose()));
+        if(best_fitness < fob(transposed_matrix(read_points("../Quadrotor-Simulator/Config/tu_gain")))){
+            write_points("../Quadrotor-Simulator/Config/tu_gain",mxd2mds(best_pos.transpose()));
         }
     }
     else if(control == 3){
-        if(best_fitness < fob(transposed_matrix(read_points("Config/gt_gain")))){
-            write_points("Config/gt_gain",mxd2mds(best_pos.transpose()));
+        if(best_fitness < fob(transposed_matrix(read_points("../Quadrotor-Simulator/Config/gt_gain")))){
+            write_points("../Quadrotor-Simulator/Config/gt_gain",mxd2mds(best_pos.transpose()));
         }
     }
     else{
-        if(best_fitness < fob(transposed_matrix(read_points("Config/gt_gain")))){
-            write_points("Config/gt_gain",mxd2mds(best_pos.transpose()));
+        if(best_fitness < fob(transposed_matrix(read_points("../Quadrotor-Simulator/Config/gt_gain")))){
+            write_points("../Quadrotor-Simulator/Config/gt_gain",mxd2mds(best_pos.transpose()));
         }
     }
 }
